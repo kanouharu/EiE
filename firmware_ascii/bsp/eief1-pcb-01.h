@@ -60,6 +60,20 @@ void SystemSleep(void);
 /* Port A bit positions */
 #define PA_31_HEARTBEAT         (u32)0x80000000
 
+/* Port B bit positions */
+
+#define PB_20_LED_RED       	(u32)0x00100000
+#define PB_19_LED_GRN       	(u32)0x00080000
+#define PB_18_LED_BLU       	(u32)0x00040000
+#define PB_17_LED_YLW       	(u32)0x00020000
+#define PB_16_LED_CYN       	(u32)0x00010000
+#define PB_15_LED_ORG	        (u32)0x00008000
+#define PB_14_LED_PRP	        (u32)0x00004000
+#define PB_13_LED_WHT	        (u32)0x00002000
+
+#define PB_10_LCD_BL_RED	        (u32)0x00000400
+#define PB_11_LCD_BL_GRN	        (u32)0x00000800
+#define PB_12_LCD_BL_BLU	        (u32)0x00001000
 
 /*! @cond DOXYGEN_EXCLUDE */
 /***********************************************************************************************************************
@@ -69,6 +83,42 @@ Bookmarks:
 @@@@@ Watchdog, Power Control, Clock, and Systick setup values
 
 ***********************************************************************************************************************/
+/* Skipping 1000 line template pattern */
+
+#define PIOA_PER_INIT (u32)0x84030007
+#define PIOB_PER_INIT (u32)0x01BFFF57
+
+#define PIOA_OER_INIT (u32)0x84010001
+#define PIOB_OER_INIT (u32)0x01BFFFE0
+
+#define PIOA_IFER_INIT (u32)0x00000000
+#define PIOB_IFER_INIT (u32)0x00000000
+
+#define PIOA_SODR_INIT (u32)0x88010000
+#define PIOA_CODR_INIT (u32)0x30000000
+#define PIOB_SODR_INIT (u32)0x01BFFE00
+#define PIOB_CODR_INIT (u32)0x00000000
+
+#define PIOA_MDER_INIT (u32)0x04000600
+#define PIOB_MDER_INIT (u32)0x00000000
+
+#define PIOA_PPUER_INIT (u32)0x00000001
+#define PIOB_PPUER_INIT (u32)0x000001C0
+
+#define PIOA_ABSR_INIT (u32)0x7B000000
+#define PIOB_ABSR_INIT (u32)0x00400018
+
+#define PIOA_SCIFSR_INIT (u32)0x00000000
+#define PIOB_SCIFSR_INIT (u32)0x00000000
+#define PIOA_DIFSR_INIT (u32)0x00000000
+#define PIOB_DIFSR_INIT (u32)0x00000000
+#define PIOA_SCDR_INIT (u32)0x00000000
+#define PIOB_SCDR_INIT (u32)0x00000000
+
+#define PIOA_OWER_INIT (u32)0x00000000
+#define PIOB_OWER_INIT (u32)0x001FFC00
+
+#define PIO_WRITE_ENABLE_INIT (u32)0x50494F00
 
 /***********************************************************************************************************************
 @@@@@ Watchdog, Power Control, Clock, and Systick setup values

@@ -36,16 +36,31 @@ Variable names shall start with "Main_" and be declared as static.
 
 void main(void)
 {
-  /* Low level initialization */
+  /* Low level Initialization */
   WatchDogSetup(); 
   ClockSetup();
   GpioSetup();
+  
+  /* Driver Initialization */
+  
+  LedInitialize();
+  
+  /* Application Initialization */
+   UserApp1Initialize();
   
   /* Super loop */  
   while(1)
   {
     WATCHDOG_BONE();
-        
+
+    /* Drivers */
+    LedRunActiveState();
+    
+    
+    /* Applications */
+    
+    UserApp1RunActiveState();
+    
     /* System sleep */
     HEARTBEAT_OFF();
     do
