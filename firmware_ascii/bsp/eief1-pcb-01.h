@@ -9,6 +9,15 @@
 /***********************************************************************************************************************
 Type Definitions
 ***********************************************************************************************************************/
+/*!
+@enum LedNameType
+@brief Logical names the the LEDs in the system.
+
+The order of the LEDs in the LedNameType must match the order of the definition
+in G_asBspLedConfigurations from eief1-pcb-01.c
+*/
+typedef enum {WHITE = 0, PURPLE, BLUE, CYAN, GREEN, YELLOW, ORANGE, RED, LCD_RED,
+LCD_GREEN, LCD_BLUE} LedNameType;
 
 
 /***********************************************************************************************************************
@@ -23,7 +32,9 @@ Type Definitions
 #define CCLK_VALUE                PLLACK_VALUE / CPU_DIVIDER                 /*!< @brief CPU clock 48 MHz */
 #define MCK                       CCLK_VALUE                                 /*!< @brief Alternate name for CPU clock 48 MHz */
 #define PERIPHERAL_DIVIDER        (u32)1                                     /*!< @brief Peripheral clock divider */
-#define PCLK_VALUE                CCLK_VALUE / PERIPHERAL_DIVIDER            /*!< @brief Peripheral clock 48 MHz */
+#define PCLK_VALUE            
+
+#define U8_TOTAL_LEDS (u8)11  /*!< Total Number of LEDS in the system */
 
 
 /***********************************************************************************************************************

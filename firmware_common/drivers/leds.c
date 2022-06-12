@@ -41,6 +41,7 @@ extern volatile u32 G_u32SystemTime1s;                 /*!< @brief From main.c *
 extern volatile u32 G_u32SystemFlags;                  /*!< @brief From main.c */
 extern volatile u32 G_u32ApplicationFlags;             /*!< @brief From main.c */
 
+extern const PinConfigurationType G_asBspLedConfigurations[U8_TOTAL_LEDS]; /*!< @brief from board-specific file */
 
 /***********************************************************************************************************************
 Global variable definitions with scope limited to this local application.
@@ -49,7 +50,8 @@ Variable names shall start with "Led_<type>" and be declared as static.
 static fnCode_type Led_StateMachine;                   /*!< @brief The state machine function pointer */
 //static u32 Led_u32Timeout;                           /*!< @brief Timeout counter used across states */
 
- 
+ static LedControlType Led_asControl[U8_TOTAL_LEDS];    /*!< @brief Holds individual control parameters for LEDs */
+
 
 /**********************************************************************************************************************
 Function Definitions
@@ -58,6 +60,57 @@ Function Definitions
 /*--------------------------------------------------------------------------------------------------------------------*/
 /*! @publicsection */                                                                                            
 /*--------------------------------------------------------------------------------------------------------------------*/
+
+/*!----------------------------------------------------------------------------------------------------------------------
+@fn void LedOn(LedNameType eLED_)
+
+@brief Turn the specified LED on.  
+
+This function automatically takes care of the active low vs. active high LEDs.
+The function works immediately (it does not require the main application
+loop to be running). 
+
+Currently it only supports one LED at a time.
+
+Example:
+
+LedOn(BLUE);
+
+
+Requires:
+- Definitions in G_asBspLedConfigurations[eLED_] and Led_asControl[eLED_] are correct
+
+@param eLED_ is a valid LED index
+
+Promises:
+- eLED_ is turned on 
+- eLED_ is set to LED_NORMAL_MODE mode
+
+*/
+void LedOn(LedNameType eLED_)
+{
+  
+  u32 *pu32OnAddress;
+
+  /* Configure set and clear addresses */
+  if(G_asBspLedConfigurations[eLED_].eActiveState == ACTIVE_HIGH)
+  {
+    /* Active high LEDs use SODR to turn on */
+    pu32OnAddress = (u32*)(&(AT91C_BASE_PIOA->PIO_SODR) + G_asBspLedConfigurations[(u8)eLED_].ePort);
+  }
+  else
+  {
+    /* Active low LEDs use CODR to turn on */
+    pu32OnAddress = (u32*)(&(AT91C_BASE_PIOA->PIO_CODR) + G_asBspLedConfigurations[(u8)eLED_].ePort);
+  }
+  
+  /* Turn on the LED */
+  *pu32OnAddress = G_asBspLedConfigurations[(u8)eLED_].u32BitPosition;
+  
+  /* Always set the LED back to LED_NORMAL_MODE mode */
+	Led_asControl[(u8)eLED_].eMode = LED_NORMAL_MODE;
+
+} /* end LedOn() */
 
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -88,6 +141,16 @@ void LedInitialize(void)
   {
     /* The task isn't properly initialized, so shut it down and don't run */
     Led_StateMachine = LedSM_Error;
+  }
+  
+  /* Initialize the LED control array */
+  for(u8 i = 0; i < U8_TOTAL_LEDS; i++)
+  {
+    Led_asControl[i].eMode = LED_NORMAL_MODE;
+    Led_asControl[i].eRate = LED_0HZ;
+
+    Led_asControl[i].u16Count = 0;
+
   }
   
 } /* end LedInitialize() */

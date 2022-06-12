@@ -33,6 +33,23 @@ All Global variable names shall start with "G_xxBsp"
 ***********************************************************************************************************************/
 /* New variables */
 
+/*! LED locations: order must correspond to the order set in LedNameType in the
+header file. */
+ const PinConfigurationType G_asBspLedConfigurations[U8_TOTAL_LEDS] =
+{ {PB_13_LED_WHT, PORTB, ACTIVE_HIGH},
+  {PB_14_LED_PRP, PORTB, ACTIVE_HIGH},
+  {PB_18_LED_BLU, PORTB, ACTIVE_HIGH},
+  {PB_16_LED_CYN, PORTB, ACTIVE_HIGH},
+  {PB_19_LED_GRN, PORTB, ACTIVE_HIGH},
+  {PB_17_LED_YLW, PORTB, ACTIVE_HIGH},
+  {PB_15_LED_ORG, PORTB, ACTIVE_HIGH},
+  {PB_20_LED_RED, PORTB, ACTIVE_HIGH},
+  {PB_10_LCD_BL_RED, PORTB, ACTIVE_HIGH},
+  {PB_11_LCD_BL_GRN, PORTB, ACTIVE_HIGH},
+  {PB_12_LCD_BL_BLU, PORTB, ACTIVE_HIGH},
+};
+
+
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* Existing variables (defined in other files -- should all contain the "extern" keyword) */
