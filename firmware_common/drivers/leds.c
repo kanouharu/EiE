@@ -112,6 +112,128 @@ void LedOn(LedNameType eLED_)
 
 } /* end LedOn() */
 
+/*!----------------------------------------------------------------------------------------------------------------------
+@fn void LedOff(LedNameType eLED_)
+
+@brief Turn the specified LED off.
+
+This function automatically takes care of the active low vs. active high LEDs.
+It works immediately (it does not require the main application
+loop to be running). 
+
+Currently it only supports one LED at a time.
+
+Example:
+
+LedOff(BLUE);
+
+
+Requires:
+- Definitions in G_asBspLedConfigurations[eLED_] and Led_asControl[eLED_] are correct
+
+@param eLED_ is a valid LED index
+
+Promises:
+- eLED_ is turned off 
+- eLED_ is set to LED_NORMAL_MODE mode
+
+*/
+void LedOff(LedNameType eLED_)
+{
+  u32 *pu32OffAddress;
+
+  /* Configure set and clear addresses */
+  if(G_asBspLedConfigurations[(u8)eLED_].eActiveState == ACTIVE_HIGH)
+  {
+    /* Active high LEDs use CODR to turn off */
+    pu32OffAddress = (u32*)(&(AT91C_BASE_PIOA->PIO_CODR) + G_asBspLedConfigurations[(u8)eLED_].ePort);
+  }
+  else
+  {
+    /* Active low LEDs use SODR to turn off */
+    pu32OffAddress = (u32*)(&(AT91C_BASE_PIOA->PIO_SODR) + G_asBspLedConfigurations[(u8)eLED_].ePort);
+  }
+  
+  /* Clear the bit corresponding to eLED_ */
+	*pu32OffAddress = G_asBspLedConfigurations[(u8)eLED_].u32BitPosition;
+
+  /* Always set the LED back to LED_NORMAL_MODE mode */
+	Led_asControl[(u8)eLED_].eMode = LED_NORMAL_MODE;
+  
+} /* end LedOff() */
+
+/*!----------------------------------------------------------------------------------------------------------------------
+@fn void LedToggle(LedNameType eLED_)
+
+@brief Toggles the specified LED from on to off or vise-versa.
+
+This function automatically takes care of the active low vs. active high LEDs.
+It works immediately (it does not require the main application
+loop to be running). 
+
+Currently it only supports one LED at a time.
+
+Example:
+
+LedToggle(BLUE);
+
+
+Requires:
+- Write access to PIOx_ODSR is enabled
+
+@param eLED_ is a valid LED index
+
+Promises:
+- eLED_ is toggled 
+- eLED_ is set to LED_NORMAL_MODE
+
+*/
+void LedToggle(LedNameType eLED_)
+{
+  u32* pu32Address = (u32*)(&(AT91C_BASE_PIOA->PIO_ODSR) + G_asBspLedConfigurations[eLED_].ePort);
+
+  *pu32Address ^= G_asBspLedConfigurations[(u8)eLED_].u32BitPosition;
+  
+  /* Set the LED to LED_NORMAL_MODE mode */
+	Led_asControl[(u8)eLED_].eMode = LED_NORMAL_MODE;
+
+} /* end LedToggle() */
+
+/*!----------------------------------------------------------------------------------------------------------------------
+@fn void LedBlink(LedNameType eLED_, LedRateType eBlinkRate_)
+
+@brief Sets eLED_ to BLINK mode with the rate given.
+
+BLINK mode requires the main loop to be running at 1ms period. If the main
+loop timing is regularly off, the blinking timing may be affected although
+unlikely to a noticeable degree.  
+
+Example to blink the PURPLE LED at 1Hz:
+
+LedBlink(PURPLE, LED_1HZ);
+
+
+Requires:
+@param eLED_ is a valid LED index
+@param eBlinkRate_ is an allowed blinking rate from LedRateType
+
+Promises:
+- eLED_ is set to LED_BLINK_MODE at the blink rate specified
+
+*/
+void LedBlink(LedNameType eLED_, LedRateType eBlinkRate_){
+  
+  /* Always set the LED back to Blink mode */
+	Led_asControl[(u8)eLED_].eMode = LED_BLINK_MODE;
+  
+  /* Set the LED blink rate */
+	Led_asControl[(u8)eLED_].eRate = eBlinkRate_;
+  
+   /* Set the LED duty counter cycle */
+	Led_asControl[(u8)eLED_].u16Count = eBlinkRate_;
+}
+
+
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 /*! @protectedsection */                                                                                            
@@ -150,6 +272,29 @@ void LedInitialize(void)
     Led_asControl[i].eRate = LED_0HZ;
 
     Led_asControl[i].u16Count = 0;
+    
+    /* Glowing Diode Solid 3 ( Digital Programming Action ): Light Eater */
+    
+     for(u8 i = 0; i < U8_TOTAL_LEDS; i++)
+     {
+        int randomLed = rand() % 8;
+        
+        if (randomLed <= 7 && randomLed >= 0){
+        LedToggle( (LedNameType)randomLed );
+        for(u32 j = 0; j < 800000; j++);
+        LedToggle( (LedNameType)randomLed );
+     }
+     }
+     
+     LedOff(WHITE);
+     LedOff(PURPLE);
+     LedOff(BLUE);
+     LedOff(CYAN);
+     LedOff(GREEN);
+     LedOff(YELLOW);
+     LedOff(ORANGE);
+     LedOff(RED);
+
 
   }
   
