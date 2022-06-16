@@ -279,11 +279,12 @@ void LedInitialize(void)
      {
         int randomLed = rand() % 8;
         
-        if (randomLed <= 7 && randomLed >= 0){
+        if (randomLed <= 7 && randomLed >= 0)
+        {
         LedToggle( (LedNameType)randomLed );
         for(u32 j = 0; j < 800000; j++);
         LedToggle( (LedNameType)randomLed );
-     }
+        }
      }
      
      LedOff(WHITE);
@@ -336,12 +337,33 @@ State Machine Declarations
 /*!-------------------------------------------------------------------------------------------------------------------
 @fn static void LedSM_Idle(void)
 
-@brief What does this function do?
+@brief Loop through led configuration structs to check for blinking updates!
 */
 static void LedSM_Idle(void)
 {
+  
+  for(u8 i = 0; i < U8_TOTAL_LEDS; i++)
+  {
  
-} /* end LedSM_Idle() */
+    if (Led_asControl[i].eMode == LED_BLINK_MODE)
+    {
+      
+        if (Led_asControl[i].u16Count == 0)
+        {
+          
+          u32* pu32Address = (u32*)(&(AT91C_BASE_PIOA->PIO_ODSR) + G_asBspLedConfigurations[i].ePort);
+          *pu32Address ^= G_asBspLedConfigurations[(u8)i].u32BitPosition;
+          Led_asControl[i].u16Count = Led_asControl[i].eRate;
+  
+        }
+        
+      Led_asControl[i].eRate--;
+            
+    }
+      
+  
+  }
+}/* end LedSM_Idle() */
 
 
 /*!-------------------------------------------------------------------------------------------------------------------
