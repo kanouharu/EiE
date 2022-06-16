@@ -127,7 +127,34 @@ State Machine Function Definitions
 */
 static void UserApp1SM_Idle(void)
 {
- 
+  static u32 u32Counter = 0;
+  
+  u32Counter++;
+  
+  if(u32Counter == 2000)
+  {
+    LedBlink(CYAN, LED_8HZ);
+  }
+  
+    if(u32Counter == 4000)
+  {
+    LedBlink(CYAN, LED_4HZ);
+  }
+  
+    if(u32Counter == 6000)
+  {
+    LedBlink(CYAN, LED_2HZ);
+  }
+  
+    if(u32Counter == 8000)
+  {
+    LedBlink(CYAN, LED_1HZ);
+    u32Counter = 0;
+  }
+  
+  
+
+
 } /* end UserApp1SM_Idle() */
     
 

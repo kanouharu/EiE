@@ -342,12 +342,16 @@ State Machine Declarations
 static void LedSM_Idle(void)
 {
   
+   u32 *pu32Address;
+  
   for(u8 i = 0; i < U8_TOTAL_LEDS; i++)
   {
  
+    /* Check if LED is in BLINK_MODE mode */
     if (Led_asControl[i].eMode == LED_BLINK_MODE)
     {
       
+    /* Toggle LED and reset cycle counter if cycle counter is 0 */
         if (Led_asControl[i].u16Count == 0)
         {
           
@@ -356,8 +360,8 @@ static void LedSM_Idle(void)
           Led_asControl[i].u16Count = Led_asControl[i].eRate;
   
         }
-        
-      Led_asControl[i].eRate--;
+     /* Decrement counter */ 
+      Led_asControl[i].u16Count--;
             
     }
       
