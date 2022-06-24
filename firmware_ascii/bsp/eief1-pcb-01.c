@@ -240,7 +240,7 @@ AT91C_BASE_PIOA->PIO_ PIO_WRITE_ENABLE_INIT */
 
 @brief Puts the system into sleep mode.
 
-Right now, sleep mode is just a for loop that does nothing
+Right now, sleep mode is just a for loop that does nothing ######!
 for 1ms of time. So it's more like "lazy" mode, even though
 it's running full speed and burning power.
 
@@ -258,7 +258,7 @@ void SystemSleep(void)
   G_u32SystemFlags |= _SYSTEM_SLEEPING;
 
   /* Kill the desired number of instructions */
-  kill_x_cycles(48000);
+  kill_x_cycles(47525);  //48,000 originally
 
   /* Clear the sleep flag */
   G_u32SystemFlags &= ~_SYSTEM_SLEEPING;

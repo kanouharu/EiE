@@ -1,16 +1,14 @@
-"C:\Program Files\IAR Systems\EWARM_8_10_1\arm\bin\armproc.dll" 
+"G:\Eie\IAR\arm\bin\armPROC.dll" 
 
-"C:\Program Files\IAR Systems\EWARM_8_10_1\arm\bin\armjlink2.dll" 
+"G:\Eie\IAR\arm\bin\armJLINK.dll" 
 
-"D:\EiE\EiE Git\eiebook\firmware_ascii\iar_8_10_1\Debug\Exe\eie_ascii-01.out" 
+"G:\Eie\otherRepos\eiebook\firmware_ascii\iar_8_10_1\Debug\Exe\eie_ascii-01.out" 
 
---plugin "C:\Program Files\IAR Systems\EWARM_8_10_1\arm\bin\armbat.dll" 
+--plugin="G:\Eie\IAR\arm\bin\armbat.dll" 
 
---rtc_enable 
+--device_macro="G:\Eie\IAR\arm\config\debugger\Microchip\SAM3U.dmac" 
 
---device_macro "C:\Program Files\IAR Systems\EWARM_8_10_1\arm\config\debugger\Atmel\SAM3U.dmac" 
-
---flash_loader "C:\Program Files\IAR Systems\EWARM_8_10_1\arm\config\flashloader\Atmel\sam3u2c\sam3u2c-flash.board" 
+--flash_loader="G:\Eie\IAR\arm\config\flashloader\Microchip\sam3u2\sam3u2-flash.board" 
 
 
 

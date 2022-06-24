@@ -264,41 +264,7 @@ void LedInitialize(void)
     /* The task isn't properly initialized, so shut it down and don't run */
     Led_StateMachine = LedSM_Error;
   }
-  
-  /* Initialize the LED control array */
-  for(u8 i = 0; i < U8_TOTAL_LEDS; i++)
-  {
-    Led_asControl[i].eMode = LED_NORMAL_MODE;
-    Led_asControl[i].eRate = LED_0HZ;
-
-    Led_asControl[i].u16Count = 0;
     
-    /* Glowing Diode Solid 3 ( Digital Programming Action ): Light Eater */
-    
-     for(u8 i = 0; i < U8_TOTAL_LEDS; i++)
-     {
-        int randomLed = rand() % 8;
-        
-        if (randomLed <= 7 && randomLed >= 0)
-        {
-        LedToggle( (LedNameType)randomLed );
-        for(u32 j = 0; j < 800000; j++);
-        LedToggle( (LedNameType)randomLed );
-        }
-     }
-     
-     LedOff(WHITE);
-     LedOff(PURPLE);
-     LedOff(BLUE);
-     LedOff(CYAN);
-     LedOff(GREEN);
-     LedOff(YELLOW);
-     LedOff(ORANGE);
-     LedOff(RED);
-
-
-  }
-  
 } /* end LedInitialize() */
 
 
