@@ -1,3 +1,38 @@
+/**********************************************************************************************************************
+File: user_app1.c                                                                
+
+----------------------------------------------------------------------------------------------------------------------
+To start a new task using this user_app1 as a template:
+ 1. Copy both user_app1.c and user_app1.h to the Application directory
+ 2. Rename the files yournewtaskname.c and yournewtaskname.h
+ 3. Add yournewtaskname.c and yournewtaskname.h to the Application Include and Source groups in the IAR project
+ 4. Use ctrl-h (make sure "Match Case" is checked) to find and replace all instances of "user_app1" with "yournewtaskname"
+ 5. Use ctrl-h to find and replace all instances of "UserApp1" with "YourNewTaskName"
+ 6. Use ctrl-h to find and replace all instances of "USER_APP1" with "YOUR_NEW_TASK_NAME"
+ 7. Add a call to YourNewTaskNameInitialize() in the init section of main
+ 8. Add a call to YourNewTaskNameRunActiveState() in the Super Loop section of main
+ 9. Update yournewtaskname.h per the instructions at the top of yournewtaskname.h
+10. Delete this text (between the dashed lines) and update the Description below to describe your task
+----------------------------------------------------------------------------------------------------------------------
+
+Description:
+This is a user_app1.c file template 
+
+------------------------------------------------------------------------------------------------------------------------
+API:
+
+Public functions:
+
+
+Protected System functions:
+void UserApp1Initialize(void)
+Runs required initialzation for the task.  Should only be called once in main init section.
+
+void UserApp1RunActiveState(void)
+Runs current task state.  Should only be called once in main loop.
+
+
+
 /*!*********************************************************************************************************************
 @file user_app1.c                                                                
 @brief Hello world!
@@ -123,35 +158,86 @@ State Machine Function Definitions
 /*!-------------------------------------------------------------------------------------------------------------------
 @fn static void UserApp1SM_Idle(void)
 
-@brief Toggle the Heartbeat LED every U16_TOGGLE_PERIOD ms #EMBC 
+@brief Binary Counter project (Green, yellow, orange, red)
 */
 static void UserApp1SM_Idle(void)
 {
-  static u32 u32Counter = 0;
   
-  u32Counter++;
+  static u16 u16BlinkCount = 0;
+  static u8 u8BinaryCounter = 0;
+
+  u16BlinkCount++;
+
+/* All discrete LEDs to off */
+  LedOff(WHITE);
+  LedOff(PURPLE);
+  LedOff(BLUE);
+  LedOff(CYAN);
+  LedOn(GREEN);
+  LedOn(YELLOW);
+  LedOn(ORANGE);
+  LedOn(RED);
   
-  if(u32Counter == 2000)
-  {
-    LedBlink(CYAN, LED_8HZ);
-  }
+  /* Backlight to white */  
+  LedOn(LCD_RED);
+  LedOn(LCD_GREEN);
+  LedOn(LCD_BLUE);
+
+
+  /* 500ms check and reset */
+  if(u16BlinkCount == 500)
+    {
+      u16BlinkCount = 0;
+      
+      /* Binary counter check and reset at 16 */
+      if ( ++u8BinaryCounter == 16)
+      {
+        
+        u8BinaryCounter = 0;
+      }
+      
+      //LedToggle(PURPLE);
+    }
   
-    if(u32Counter == 4000)
-  {
-    LedBlink(CYAN, LED_4HZ);
-  }
-  
-    if(u32Counter == 6000)
-  {
-    LedBlink(CYAN, LED_2HZ);
-  }
-  
-    if(u32Counter == 8000)
-  {
-    LedBlink(CYAN, LED_1HZ);
-    u32Counter = 0;
-  }
-  
+     /* Parse the current count to set the LEDs.  
+      RED is bit 0, ORANGE is bit 1, 
+      YELLOW is bit 2, GREEN is bit 3. */
+    
+    if(u8BinaryCounter & 0x01)
+    {
+      LedOn(RED);
+    }
+    else
+    {
+      LedOff(RED);
+    }
+
+    if(u8BinaryCounter & 0x02)
+    {
+      LedOn(ORANGE);
+    }
+    else
+    {
+      LedOff(ORANGE);
+    }
+
+    if(u8BinaryCounter & 0x04)
+    {
+      LedOn(YELLOW);
+    }
+    else
+    {
+      LedOff(YELLOW);
+    }
+
+    if(u8BinaryCounter & 0x08)
+    {
+      LedOn(GREEN);
+    }
+    else
+    {
+      LedOff(GREEN);
+    }
   
 
 
