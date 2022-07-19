@@ -40,6 +40,8 @@ void main(void)
   WatchDogSetup(); 
   ClockSetup();
   GpioSetup();
+  InterruptSetup();
+  
   
   /* Driver initialization */
   LedInitialize();
