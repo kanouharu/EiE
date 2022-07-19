@@ -62,5 +62,30 @@ typedef enum {FALSE = 0, TRUE = !FALSE} bool;  /*!< @brief EiE standard variable
 #endif
 
 
+
+/*!
+@enum PortOffsetType
+@brief Port offset between identical registers in PIOA and PIOB
+*/
+typedef enum {PORTA = 0, PORTB = 0x80} PortOffsetType;
+
+/*!
+@enum GpioActiveType
+@brief Active type of pin hardware.
+*/
+typedef enum {ACTIVE_LOW = 0, ACTIVE_HIGH = 1} GpioActiveType;
+
+/*!
+@enum PinConfigurationType
+@brief Struct to hold pin configuration
+*/
+typedef struct
+{
+  u32 u32BitPosition;       /*!> @breif Pin bit position within port */
+  PortOffsetType ePort;     /*!> @breif Pin port position */
+  GpioActiveType eActiveState;   /*!> @breif Pin hardware active type*/
+}PinConfigurationType;
+
+
 #endif /* __TYPEDEFS_H */
 

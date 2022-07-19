@@ -58,6 +58,23 @@ typedef enum {WHITE = 0, PURPLE, BLUE, CYAN, GREEN, YELLOW, ORANGE, RED, LCD_RED
 
 #define U8_TOTAL_LEDS             (u8)11        /*!< @brief Total number of LEDs in the system */
 
+/*!
+@enum ButtonNameType
+@breif Logical names for buttons in the system.
+
+The order of the buttons in ButtonNameType must match the order of the definition
+in G_asBspButtonConfigurations from eief1-pcb-01.c.
+*/
+
+typedef enum {BUTTON0 = 0, BUTTON1, BUTTON2, BUTTON3} ButtonNameType;
+
+#define U8_TOTAL_BUTTONS (u8)4   /* Total number of Buttons in the system */
+
+/* All buttons on  each port must be ORed together here: set to 0 if no buttons */
+
+#define GPIOA_BUTTONS   (u32)(PA_17_BUTTON0)
+#define GPIOB_BUTTONS   (u32)(PB_00_BUTTON1 | PB_01_BUTTON2 | PB_02_BUTTON3)
+
 
 
 

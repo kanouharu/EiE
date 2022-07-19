@@ -34,19 +34,33 @@ All Global variable names shall start with "G_xxBsp"
 /* New variables */
 
 /*! LED locations: order must correspond to the order set in LedNameType in the header file. */
-const LedConfigurationType G_asBspLedConfigurations[U8_TOTAL_LEDS] = { {PB_13_LED_WHT, LED_PORTB, LED_ACTIVE_HIGH}, 
-                                                                       {PB_14_LED_PRP, LED_PORTB, LED_ACTIVE_HIGH}, 
-                                                                       {PB_18_LED_BLU, LED_PORTB, LED_ACTIVE_HIGH}, 
-                                                                       {PB_16_LED_CYN, LED_PORTB, LED_ACTIVE_HIGH},
-                                                                       {PB_19_LED_GRN, LED_PORTB, LED_ACTIVE_HIGH}, 
-                                                                       {PB_17_LED_YLW, LED_PORTB, LED_ACTIVE_HIGH}, 
-                                                                       {PB_15_LED_ORG, LED_PORTB, LED_ACTIVE_HIGH}, 
-                                                                       {PB_20_LED_RED, LED_PORTB, LED_ACTIVE_HIGH},
-                                                                       {PB_10_LCD_BL_RED, LED_PORTB, LED_ACTIVE_HIGH}, 
-                                                                       {PB_11_LCD_BL_GRN, LED_PORTB, LED_ACTIVE_HIGH}, 
-                                                                       {PB_12_LCD_BL_BLU, LED_PORTB, LED_ACTIVE_HIGH} 
+
+const LedConfigurationType G_asBspLedConfigurations[U8_TOTAL_LEDS] =
+
+{ {PB_13_LED_WHT, LED_PORTB, LED_ACTIVE_HIGH}, 
+
+{ PB_14_LED_PRP, LED_PORTB, LED_ACTIVE_HIGH}, 
+  {PB_18_LED_BLU, LED_PORTB, LED_ACTIVE_HIGH}, 
+  {PB_16_LED_CYN, LED_PORTB, LED_ACTIVE_HIGH},
+  {PB_19_LED_GRN, LED_PORTB, LED_ACTIVE_HIGH}, 
+  {PB_17_LED_YLW, LED_PORTB, LED_ACTIVE_HIGH}, 
+  {PB_15_LED_ORG, LED_PORTB, LED_ACTIVE_HIGH}, 
+  {PB_20_LED_RED, LED_PORTB, LED_ACTIVE_HIGH},
+  {PB_10_LCD_BL_RED, LED_PORTB, LED_ACTIVE_HIGH}, 
+  {PB_11_LCD_BL_GRN, LED_PORTB, LED_ACTIVE_HIGH}, 
+  {PB_12_LCD_BL_BLU, LED_PORTB, LED_ACTIVE_HIGH} 
                                                                      };
 
+/*! Button locations: order must correspond to the order set in ButtonNameType in the header file. */
+const PinConfigurationType G_asBspButtonConfigurations[U8_TOTAL_BUTTONS] = 
+
+
+{ {PA_17_BUTTON0, LED_PORTA, ACTIVE_LOW}, 
+  {PB_00_BUTTON1, LED_PORTB, ACTIVE_LOW},
+  {PB_01_BUTTON2, LED_PORTB, ACTIVE_LOW},
+  {PB_02_BUTTON3, LED_PORTB, ACTIVE_LOW}
+  
+};
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* Existing variables (defined in other files -- should all contain the "extern" keyword) */
