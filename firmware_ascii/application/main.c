@@ -45,6 +45,7 @@ void main(void)
   
   /* Driver initialization */
   LedInitialize();
+  ButtonInitialize();
 
 
   /* Application initialization */
@@ -57,6 +58,7 @@ void main(void)
 
     /* Drivers */
     LedRunActiveState();
+    ButtonRunActiveState();
     
     /* Applications */
     UserApp1RunActiveState();

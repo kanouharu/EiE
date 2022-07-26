@@ -47,6 +47,7 @@ Variable names shall start with "Button_xx" and be declared as static.
 ***********************************************************************************************************************/
 static fnCode_type Button_pfnStateMachine;                  /*!< @brief The Button application state machine function pointer */
 
+static ButtonStateType Button_asStatus[U8_TOTAL_BUTTONS];
 
 /************ EDIT BOARD-SPECIFIC GPIO DEFINITIONS ABOVE ***************/
 

@@ -10,6 +10,25 @@ File: buttons.h
 /***********************************************************************************************************************
 Type Definitions
 ***********************************************************************************************************************/
+/*!
+@enum ButtonStateType
+@brief Self-documenting button state type */
+
+typedef enum {RELEASED, PRESSED} ButtonStateType;
+
+/*!
+@struct ButtonStatusType
+@brief Required parameters for the task to track what each button is doing.
+*/
+
+typedef struct
+{
+  ButtonStateType eCurrentState;  /*!< Current state of the button */
+  ButtonStateType eNewState;      /*!< New state of the button */
+  u32 u32TimeState;               /*!< Time when button was pressed */
+  bool bNewPressFlag;              /*!< TRUE if press not acknowledged */
+} ButtonStatusType;
+
 
 /***********************************************************************************************************************
 Constants / Definitions
