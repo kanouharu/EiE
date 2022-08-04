@@ -47,7 +47,7 @@ Variable names shall start with "Button_xx" and be declared as static.
 ***********************************************************************************************************************/
 static fnCode_type Button_pfnStateMachine;                  /*!< @brief The Button application state machine function pointer */
 
-static ButtonStateType Button_asStatus[U8_TOTAL_BUTTONS];
+ static ButtonStatusType Button_asStatus[U8_TOTAL_BUTTONS];
 
 /************ EDIT BOARD-SPECIFIC GPIO DEFINITIONS ABOVE ***************/
 
@@ -66,7 +66,7 @@ Function Definitions
 /* Protected Functions */
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-/*----------------------------------------------------------------------------------------------------------------------
+/*!----------------------------------------------------------------------------------------------------------------------
 Function: ButtonInitialize
 
 Description:
@@ -81,11 +81,44 @@ Promises:
 void ButtonInitialize(void)
 {
 
+  /* Setup default data  fpr all of the buttons in the system*/
+  
+  for(u8 i = 0; i < U8_TOTAL_BUTTONS;i++)
+  {
+    Button_asStatus[i].bDebounceActive = FALSE;
+    Button_asStatus[i].bNewPressFlag = FALSE;
+    Button_asStatus[i].eCurrentState = RELEASED;
+    Button_asStatus[i].eNewState  = RELEASED;
+    Button_asStatus[i].u32DebounceTimeStart = 0;
+    Button_asStatus[i].u32TimeStamp = 0;
+
+    
+    
+    /* Enable PIO interrupts */
+    AT91C_BASE_PIOA->PIO_IER = GPIOA_BUTTONS;
+    AT91C_BASE_PIOB->PIO_IER = GPIOB_BUTTONS;
+    
+    /* Dummy code to read the ISR registers and clear the flags */
+    u32Dummy u32BitTrapA = AT91C_BASE_PIOA->PIO_ISR; 
+    u32Dummy u32BitTrapB = AT91C_BASE_PIOA->PIO_ISR; 
+
+    /* Configure the NVIC to ensure the PIOA and PIOB interrups are active */
+    NVIC_ClearPendingIRQ(IRQn_PIOA);
+    NVIC_ClearPendingIRQ(IRQn_PIOB);
+    NVIC_EnableIRQ(IRQn_PIOA);
+    NVIC_EnableIRQ(IRQn_PIOB);
+    
+    /* Init complete: set fuction pointer and application flag! */
+    Button_pfnStateMachine = ButtonSM_Idle();
+
+
+
+  }
 
 } /* end ButtonInitialize() */
 
 
-/*----------------------------------------------------------------------------------------------------------------------
+/*!----------------------------------------------------------------------------------------------------------------------
 Function ButtonRunActiveState()
 
 Description:
@@ -105,7 +138,28 @@ void ButtonRunActiveState(void)
 
 } /* end ButtonRunActiveState */
 
+/*!----------------------------------------------------------------------------------------------------------------------
+@fn void ButtonStartDebounce(u32 u32BitPosition_, PortOffsetType ePort_)
 
+@brief Called only from ISR: sets the "debounce active" flag and debounce start time
+
+Requires:
+- Only that the PIOA or PIOB ISR should call this function
+
+@param u32BitPosition_ is a SINGLE bit for the button pin to start debouncing
+@param ePort_ is the port on which the button is located  
+
+Promises:
+- If the indicated button is found in G_asBspButtonConfigurations, then the
+ corresponding interrupt is disabled and debounce information is set in Button_as-
+Status
+*/
+
+void ButtonStartDebounce(u32 u32BitPosition_, PortOffsetType ePort_)
+{
+  
+  
+}
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* Private functions */

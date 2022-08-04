@@ -23,10 +23,14 @@ typedef enum {RELEASED, PRESSED} ButtonStateType;
 
 typedef struct
 {
+  bool bDebounceActive;           /*!< True by ISR if a button interrupt occurs */
+  bool bNewPressFlag;              /*!< TRUE if press not acknowledged */
   ButtonStateType eCurrentState;  /*!< Current state of the button */
   ButtonStateType eNewState;      /*!< New state of the button */
-  u32 u32TimeState;               /*!< Time when button was pressed */
-  bool bNewPressFlag;              /*!< TRUE if press not acknowledged */
+  u32 u32DebounceTimeStart;       /*!< Time loaded by ISR when interrupt occurs */
+  u32 u32TimeStamp;               /*!< Time when button was pressed */
+
+  
 } ButtonStatusType;
 
 

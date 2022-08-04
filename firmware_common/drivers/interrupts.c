@@ -104,6 +104,28 @@ Interrupt Service Routine Definitions
 /*! @protectedsection */                                                                                            
 /*--------------------------------------------------------------------------------------------------------------------*/
 
+/*!-------------------------------------------------------------------------------------------------------------------
+@fn ISR void PIOA_Irqhandler(void)
+
+@brief Parses the PORTA GPIO interrups and handles them appropriately.
+
+Note that all PORTA GPIO interrupts are ORed and will trigger this handler,
+so any expected interrupt that is enabled must be parsed out and handled.
+
+Requires:
+- The button IO bits match the interrupt flag locations
+
+Promises:
+- Buttons: sets the active button's deboucing flag, clears the intterupt
+  and initializes the button's debounce timer.
+*/
+
+void PIOA_IrqHandler(void)
+{
+  /* Clear the PIOA pending flag and exit */
+  NVIC_ClearPendingIRQ(IRQn_PIOA);
+} /* end PIOA_IrqHandler()  */
+
 
 
 /*--------------------------------------------------------------------------------------------------------------------*/

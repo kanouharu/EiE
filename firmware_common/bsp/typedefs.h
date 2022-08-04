@@ -87,5 +87,10 @@ typedef struct
 }PinConfigurationType;
 
 
+/* Dummy type for manipulating interrupt system and compiler. Definition implied
+by reportedly working code */
+
+typedef ULONG u32Dummy; /*!< @brief Enigmatic variable type name to remove interrupt flags */
+
 #endif /* __TYPEDEFS_H */
 
