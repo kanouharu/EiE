@@ -66,7 +66,7 @@ The order of the buttons in ButtonNameType must match the order of the definitio
 in G_asBspButtonConfigurations from eief1-pcb-01.c.
 */
 
-typedef enum {BUTTON0 = 0, BUTTON1, BUTTON2, BUTTON3} ButtonNameType;
+typedef enum {BUTTON0 = 0, BUTTON1, BUTTON2, BUTTON3, NOBUTTON} ButtonNameType;
 
 #define U8_TOTAL_BUTTONS (u8)4   /* Total number of Buttons in the system */
 

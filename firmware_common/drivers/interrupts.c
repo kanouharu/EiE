@@ -126,6 +126,29 @@ void PIOA_IrqHandler(void)
   NVIC_ClearPendingIRQ(IRQn_PIOA);
 } /* end PIOA_IrqHandler()  */
 
+/*!-------------------------------------------------------------------------------------------------------------------
+@fn ISR void PIOB_Irqhandler(void)
+
+@brief Parses the PORTB GPIO interrups and handles them appropriately.
+
+Note that all PORTB GPIO interrupts are ORed and will trigger this handler,
+so any expected interrupt that is enabled must be parsed out and handled.
+
+Requires:
+- The button IO bits match the interrupt flag locations
+
+Promises:
+- Buttons: sets the active button's deboucing flag, clears the intterupt
+  and initializes the button's debounce timer.
+*/
+
+void PIOB_IrqHandler(void)
+{
+  /* Clear the PIOB pending flag and exit */
+  NVIC_ClearPendingIRQ(IRQn_PIOB);
+} /* end PIOB_IrqHandler()  */
+
+
 
 
 /*--------------------------------------------------------------------------------------------------------------------*/

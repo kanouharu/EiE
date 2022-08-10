@@ -109,7 +109,7 @@ void ButtonInitialize(void)
     NVIC_EnableIRQ(IRQn_PIOB);
     
     /* Init complete: set fuction pointer and application flag! */
-    Button_pfnStateMachine = ButtonSM_Idle();
+    Button_pfnStateMachine = ButtonSM_Idle;
 
 
 
@@ -157,6 +157,26 @@ Status
 
 void ButtonStartDebounce(u32 u32BitPosition_, PortOffsetType ePort_)
 {
+  
+  /* Identify button */
+  
+  for (u8 i = 0; i < U8_TOTAL_BUTTONS;i++){
+    
+    if (u32BitPosition_ == G_asBspButtonConfigurations[i].u32BitPosition )
+      {
+        /* Configure Interrupt Disable Address */
+        u32 *pu32DisableAddress = (u32*)(&(AT91C_BASE_PIOA->PIO_IDR) + ePort_);
+        
+        /* Interrupt source flag for button */
+        *pu32DisableAddress ^= u32BitPosition_;
+        
+        /* Set debounce flag and debounce time stamp */
+        Button_asStatus[i].bDebounceActive = TRUE;
+        Button_asStatus[i].u32DebounceTimeStart = G_u32SystemTime1ms;
+        
+
+  }
+  
   
   
 }
