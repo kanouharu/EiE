@@ -52,6 +52,7 @@ Function Declarations
 /*--------------------------------------------------------------------------------------------------------------------*/
 void ButtonInitialize(void);                        
 void ButtonRunActiveState(void);
+void ButtonStartDebounce(u32 u32BitPosition_, PortOffsetType ePort_);
 
 
 /*--------------------------------------------------------------------------------------------------------------------*/

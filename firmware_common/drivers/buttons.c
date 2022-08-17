@@ -47,7 +47,9 @@ Variable names shall start with "Button_xx" and be declared as static.
 ***********************************************************************************************************************/
 static fnCode_type Button_pfnStateMachine;                  /*!< @brief The Button application state machine function pointer */
 
- static ButtonStatusType Button_asStatus[U8_TOTAL_BUTTONS];
+static ButtonStatusType Button_asStatus[U8_TOTAL_BUTTONS];
+extern const PinConfigurationType G_asBspButtonConfigurations[U8_TOTAL_BUTTONS];
+
 
 /************ EDIT BOARD-SPECIFIC GPIO DEFINITIONS ABOVE ***************/
 
@@ -81,7 +83,7 @@ Promises:
 void ButtonInitialize(void)
 {
 
-  /* Setup default data  fpr all of the buttons in the system*/
+  /* Setup default data  for all of the buttons in the system*/
   
   for(u8 i = 0; i < U8_TOTAL_BUTTONS;i++)
   {
@@ -158,28 +160,61 @@ Status
 void ButtonStartDebounce(u32 u32BitPosition_, PortOffsetType ePort_)
 {
   
-  /* Identify button */
+  ButtonNameType eButton = NOBUTTON;
   
-  for (u8 i = 0; i < U8_TOTAL_BUTTONS;i++){
+  /* Parse through to find the button */
+  
+  for (u8 i = 0; i < U8_TOTAL_BUTTONS;i++)
+  {
     
-    if (u32BitPosition_ == G_asBspButtonConfigurations[i].u32BitPosition )
+    if ((u32BitPosition_ == G_asBspButtonConfigurations[i].u32BitPosition ) &&
+         (ePort_ == G_asBspButtonConfigurations[i].ePort))
       {
-        /* Configure Interrupt Disable Address */
+        
+        eButton = (ButtonNameType)i;
+        break;
+      }
+  }
+  
+  /* If the button has been found, disable the interrupt and update debounce status */
+  
+  if(eButton != NOBUTTON)
+  {
+    AT91C_BASE_PIOA->PIO_IDR |= u32BitPosition_;
+    Button_asStatus[(u8)eButton].bDebounceActive = TRUE;
+    Button_asStatus[(u8)eButton].u32DebounceTimeStart = G_u32SystemTime1ms;
+  }
+  
+  /* Part of my own, dissenting code attempt follows.
+     Why does the provided, "Correct" code only address interrupt signals from Port A?
+     Button inputs are in fact distrubuted between port A & B and this function
+     is called by each port's respective interrupt service routine, so should it 
+     not be written to handle both cases?
+     The previous pattern for manipulating directly writable peripherial registers
+     entailed defining local pointer objects and performing cool bit-wise ops on
+     them or otherwise simply assigning values. As far as I can tell, the vender provided
+     declarations for those peripherial registers don't differ signifigantly from
+     the interrupt registers manipulated here. Why have we abandoned the pattern?
+     Is it related to the 'hack' involving repeated type casts needed to appease
+     the compiler at that time? Maybe the text will address some of this, but it's 
+     bothering me! */
+
+     
+      /*
+        /// Configure Interrupt Disable Address
         u32 *pu32DisableAddress = (u32*)(&(AT91C_BASE_PIOA->PIO_IDR) + ePort_);
         
-        /* Interrupt source flag for button */
-        *pu32DisableAddress ^= u32BitPosition_;
+        ///Interrupt source flag for button
+        *pu32DisableAddress |= u32BitPosition_;
         
-        /* Set debounce flag and debounce time stamp */
+       /// Set debounce flag and debounce time stamp
         Button_asStatus[i].bDebounceActive = TRUE;
         Button_asStatus[i].u32DebounceTimeStart = G_u32SystemTime1ms;
         
-
-  }
+      */
+  } /* end ButtonStartDebounce */
   
   
-  
-}
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* Private functions */
