@@ -93,7 +93,7 @@ void ButtonInitialize(void)
     Button_asStatus[i].eNewState  = RELEASED;
     Button_asStatus[i].u32DebounceTimeStart = 0;
     Button_asStatus[i].u32TimeStamp = 0;
-
+  }
     
     
     /* Enable PIO interrupts */
@@ -102,7 +102,7 @@ void ButtonInitialize(void)
     
     /* Dummy code to read the ISR registers and clear the flags */
     u32Dummy u32BitTrapA = AT91C_BASE_PIOA->PIO_ISR; 
-    u32Dummy u32BitTrapB = AT91C_BASE_PIOA->PIO_ISR; 
+    u32Dummy u32BitTrapB = AT91C_BASE_PIOB->PIO_ISR; 
 
     /* Configure the NVIC to ensure the PIOA and PIOB interrups are active */
     NVIC_ClearPendingIRQ(IRQn_PIOA);
@@ -115,7 +115,7 @@ void ButtonInitialize(void)
 
 
 
-  }
+  
 
 } /* end ButtonInitialize() */
 
@@ -164,8 +164,7 @@ void ButtonStartDebounce(u32 u32BitPosition_, PortOffsetType ePort_)
   
   /* Parse through to find the button */
   
-  for (u8 i = 0; i < U8_TOTAL_BUTTONS;i++)
-  {
+  for (u8 i = 0; i < U8_TOTAL_BUTTONS;i++){
     
     if ((u32BitPosition_ == G_asBspButtonConfigurations[i].u32BitPosition ) &&
          (ePort_ == G_asBspButtonConfigurations[i].ePort))
@@ -176,42 +175,20 @@ void ButtonStartDebounce(u32 u32BitPosition_, PortOffsetType ePort_)
       }
   }
   
-  /* If the button has been found, disable the interrupt and update debounce status */
-  
-  if(eButton != NOBUTTON)
-  {
-    AT91C_BASE_PIOA->PIO_IDR |= u32BitPosition_;
-    Button_asStatus[(u8)eButton].bDebounceActive = TRUE;
-    Button_asStatus[(u8)eButton].u32DebounceTimeStart = G_u32SystemTime1ms;
-  }
-  
-  /* Part of my own, dissenting code attempt follows.
-     Why does the provided, "Correct" code only address interrupt signals from Port A?
-     Button inputs are in fact distrubuted between port A & B and this function
-     is called by each port's respective interrupt service routine, so should it 
-     not be written to handle both cases?
-     The previous pattern for manipulating directly writable peripherial registers
-     entailed defining local pointer objects and performing cool bit-wise ops on
-     them or otherwise simply assigning values. As far as I can tell, the vender provided
-     declarations for those peripherial registers don't differ signifigantly from
-     the interrupt registers manipulated here. Why have we abandoned the pattern?
-     Is it related to the 'hack' involving repeated type casts needed to appease
-     the compiler at that time? Maybe the text will address some of this, but it's 
-     bothering me! */
-
-     
-      /*
-        /// Configure Interrupt Disable Address
+    /* If the button has been found, disable the interrupt and update debounce status */
+  if(eButton != NOBUTTON){
+        /* Configure Interrupt Disable Address */
         u32 *pu32DisableAddress = (u32*)(&(AT91C_BASE_PIOA->PIO_IDR) + ePort_);
         
-        ///Interrupt source flag for button
+             
+        /* Interrupt source flag for button */
         *pu32DisableAddress |= u32BitPosition_;
         
-       /// Set debounce flag and debounce time stamp
-        Button_asStatus[i].bDebounceActive = TRUE;
-        Button_asStatus[i].u32DebounceTimeStart = G_u32SystemTime1ms;
-        
-      */
+        /* Set debounce flag and debounce time stamp */
+        Button_asStatus[(u8)eButton].bDebounceActive = TRUE;
+        Button_asStatus[(u8)eButton].u32DebounceTimeStart = G_u32SystemTime1ms;
+   
+  }
   } /* end ButtonStartDebounce */
   
   

@@ -122,23 +122,44 @@ Promises:
 
 void PIOA_IrqHandler(void)
 {
-  /// NO BREAKPOINTS BEFORE PIO_ISR READS, FOR THE LOVE OF ARM!
+  /************ NO BREAKPOINTS BEFORE PIO_ISR READS, FOR THE LOVE OF ARM!
+    A debuggering viewing this register will clear flags needed!! */
 
-  /* Read from PIOA_ISR, which clears it */
-   u32 u32IterruptSignals = AT91C_BASE_PIOA->PIO_ISR;
-   
-  /// BREAKPOINT-SAFE ZONE STARTS HERE  <3
+    u32 u32GPIOInterruptSources;
+    u32 u32ButtonInterrupts;
+    u32 u32CurrentButtonLocation;
 
-  /* Mask out relevant PIOA interrupt flag */
-   u32 u32flags = (u32)(u32IterruptSignals & (GPIOA_BUTTONS )); 
    
-  /* If Button signal is pressent in flags, summon Debounce*/
-   if ((u32flags & GPIOA_BUTTONS) == (GPIOA_BUTTONS))
+    u32GPIOInterruptSources = AT91C_BASE_PIOA->PIO_ISR;
+
+  /*********** BREAKPOINT-SAFE ZONE STARTS HERE.  <3 */
+
+  /* Mask out irrelevant PIOA interrupt flags from signal */
+   u32ButtonInterrupts = (u32GPIOInterruptSources & GPIOA_BUTTONS ); 
+   
+  /* Check if Button signal was pressent in flags */
+   if (u32ButtonInterrupts)
    {
-   
-     ButtonStartDebounce(GPIOA_BUTTONS, PORTA);
+     
+   /* Scan though the flags looking for those that are set. */
+    u32 u32CurrentButtonLocation = 0x00000001;
+    
+    for(u8 i = 0; i < 31; i++)
+    {
+           
+      /* If the bit is set, then start debouncing */
+     
+     if(u32ButtonInterrupts & u32CurrentButtonLocation)
+     {
+     ButtonStartDebounce(u32CurrentButtonLocation, PORTA);
     }
-  
+    
+     //My First Practical Logical Bit Shift!!! Yay! So Cool! 
+     u32CurrentButtonLocation <<= 1; 
+     
+    }
+    
+   }
   /* Clear the PIOA pending flag and exit */
   NVIC_ClearPendingIRQ(IRQn_PIOA);
 } /* end PIOA_IrqHandler()  */
@@ -161,12 +182,47 @@ Promises:
 
 void PIOB_IrqHandler(void)
 {
-  ///NO BREAKPOINTS BEFORE PIO_ISR READS, FOR THE LOVE OF ARM!
+  /************ NO BREAKPOINTS BEFORE PIO_ISR READS, FOR THE LOVE OF ARM!
+    A debuggering viewing this register will clear flags needed!! */
 
-     u32 u32IterruptSignals = AT91C_BASE_PIOB->PIO_ISR;
+    u32 u32GPIOInterruptSources;
+    u32 u32ButtonInterrupts;
+    u32 u32CurrentButtonLocation;
 
-  
-  /// BREAKPOINT-SAFE ZONE STARTS HERE  <3
+   
+    u32GPIOInterruptSources = AT91C_BASE_PIOB->PIO_ISR;
+
+  /*********** BREAKPOINT-SAFE ZONE STARTS HERE.  <3 */
+
+  /* Mask out irrelevant PIOA interrupt flags from signal */
+   u32ButtonInterrupts = (u32GPIOInterruptSources & GPIOB_BUTTONS ); 
+   
+  /* Check if Button signal was pressent in flags */
+   if (u32ButtonInterrupts)
+   {
+     
+   /* Scan though the flags looking for those that are set. */
+    u32 u32CurrentButtonLocation = 0x00000001;
+    
+    for(u8 i = 0; i < 31; i++)
+    {
+           
+      /* If the bit is set, then start debouncing */
+     
+     if(u32ButtonInterrupts & u32CurrentButtonLocation)
+     {
+     ButtonStartDebounce(u32CurrentButtonLocation, PORTB);
+    }
+    
+
+    
+    //My First Practical Logical Bit Shift!!! Yay! So Cool! 
+
+     u32CurrentButtonLocation <<= 1; 
+     
+    }
+    
+   }
 
   /* Clear the PIOB pending flag and exit */
   NVIC_ClearPendingIRQ(IRQn_PIOB);
