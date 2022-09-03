@@ -26,6 +26,8 @@ Protected:
 ***********************************************************************************************************************/
 
 #include "configuration.h"
+#include "utilities.h"
+
 
 /***********************************************************************************************************************
 Global variable definitions with scope across entire project.
@@ -205,6 +207,119 @@ The button state machine monitors button activity and manages debouncing and
 maintaining the global button states.
 ***********************************************************************************************************************/
 
+
+
+/*!----------------------------------------------------------------------------------------------------------------------
+@fn static void ButtonSM_ButtonActive(void)
+
+@brief Monitor debouncing buttons, manage their flags upon registering a valid press or
+release, and also re-enable interrupt.
+
+Requires:
+- 
+
+
+Promises:
+- 
+*/
+
+ static void ButtonSM_ButtonActive(void)
+ {
+   u32 *pu32PortAddress;
+   u32 *pu32InterruptAddress;
+   
+   /* Assume no buttons are active and reset SM pointer to Idle state */
+   
+   Button_pfnStateMachine = ButtonSM_Idle;   
+   
+   /* check for buttons that are debouncing */
+   
+    for(u8 i = 0; i < U8_TOTAL_BUTTONS;i++)
+    {
+    /* Load address offsets for the current button */
+    pu32PortAddress = (u32*)(&(AT91C_BASE_PIOA->PIO_PDSR) +
+                             G_asBspButtonConfigurations[i].ePort);
+    pu32InterruptAddress = (u32*)(&(AT91C_BASE_PIOA->PIO_IER) +
+                             G_asBspButtonConfigurations[i].ePort);    
+    
+    /* Check if the current button is debouncing */
+    if(Button_asStatus[i].bDebounceActive)
+    {
+      /* Keep SM pointer on Active */
+      
+         Button_pfnStateMachine = ButtonSM_ButtonActive;   
+         
+         ///* Curious */************************************
+         LedOn(ORANGE);
+
+    /* Check if debounce period is over */
+      if(IsTimeUp(&Button_asStatus[i].u32DebounceTimeStart, U32_DEBOUNCE_TIME))
+      {
+      
+        /* Active low */
+        if(G_asBspButtonConfigurations[i].eActiveState == ACTIVE_LOW){
+          
+          
+          /* Read PIO_PDSR to get the actual input signal(new button state) */
+          
+          if( ~(*pu32PortAddress) & G_asBspButtonConfigurations[i].u32BitPosition)
+          {
+            Button_asStatus[i].eNewState = PRESSED;
+          
+          }
+        
+        /* Active high */
+        else 
+        {       
+            Button_asStatus[i].eNewState = RELEASED;
+        }
+       
+        
+        }
+        
+        /* Update if the button state has changed */
+        if(Button_asStatus[i].eNewState != Button_asStatus[i].eCurrentState)
+        {
+          Button_asStatus[i].eCurrentState = Button_asStatus[i].eNewState;
+                                              
+                                              
+          /* If the new state is PRESSED, update the new press flag */
+          if(Button_asStatus[i].eCurrentState == PRESSED)
+          {
+            
+            
+          Button_asStatus[i].bNewPressFlag = TRUE;
+          Button_asStatus[i].u32TimeStamp = G_u32SystemTime1ms; 
+                     
+            
+          }
+          
+          
+          
+        
+        
+        }
+        
+        /* Regardless of a good press or not, clear the debounce active flag and 
+        re-enable the interrupts */
+        
+        Button_asStatus[i].bDebounceActive = FALSE;
+        *pu32InterruptAddress = G_asBspButtonConfigurations[i].u32BitPosition;
+      
+        ///* Curious */ ******************************
+        LedOff(ORANGE);
+        
+    } /* end if( IsTimeUp.....) */
+    
+   } /*   if(Button_asStatus[i].... */
+   
+   
+  } /* end  for(u8 i = 0; i < U8_TOTAL_BUTTONS;i++) */
+   
+   
+   
+ }/* end ButtonSM_ButtonActive */
+
 /*!--------------------------------------------------------------------------------------------------------------------
 @fn static void ButtonSM_Idle(void)
 
@@ -228,113 +343,18 @@ static void ButtonSM_Idle(void)
   }
   
 } /* end ButtonSM_Idle(void) */
-
-/*!----------------------------------------------------------------------------------------------------------------------
-@fn static void ButtonSM_ButtonActive(void)
-
-@brief Monitor debouncing buttons, manage their flags upon registering a valid press or
-release, and also re-enable interrupt.
-
-Requires:
-- 
-
-
-Promises:
-- 
-*/
-
- static void ButtonSM_ButtonActive(void)
- {
-   u32 *pu32PortAddress;
-   u32 *pu32InterruptAddress;
-   
-   /* Assume no buttons are active and reset SM pointer to Idle state */
-   
-   Button_pfnStateMachine = ButtonSM_Idle();   
-   
-   /* check for buttons that are debouncing */
-   
-    for(u8 i = 0; i < U8_TOTAL_BUTTONS;i++)
-  {
-    /* Load address offsets for the current button */
-    pu32PortAddress = (u32*)(&(AT91C_BASE_PIOA->PIO_PDSR) +
-                             G_asBspButtonConfigurations[i].ePort);
-    pu32InterruptAddress = (u32*)(&(AT91C_BASE_PIOA->PIO_IER) +
-                             G_asBspButtonConfigurations[i].ePort);    
-    
-    /* Check if the current button is debouncing */
-    if(Button_asStatus[i].bDebounceActive)
-    {
-      /* Keep SM pointer on Active */
-      
-    /* Check if debounce period is over */
-      if( IsTimeUp(&Button_asStatus[i].u32DebounceTimeStart, U32_DEBOUNCE_TIME))
-      {
-        /* Active low */
-        if(G_asBspButtonConfigurations[i].eActiveState == ACTIVE_LOW){
-          
-          
-          /* Read PIO_PDSR to get the actual input signal(new button state) */
-          
-          
-        }
-        /* Active high */
-        else 
-        {
-          
-          
-          /* Read PIO_PDSR to get the actual input signal(new button state) */
-
-          
-          
-        }
-        
-        /* Update if the button state has changed */
-        if(Button_asStatus[i].eNewState != Button_asStatus[i].eCurrentState)
-        {
-          /* If the new state is PRESSED, update the new press flag */
-          if(Button_asStatus[i].eCurrentState == PRESSED)
-          {
-            
-            
-          //  
-            
-            
-            
-          }
-          
-          
-          
-        
-        
-        }
-        
-        /* Regardless of a good press or not, clear the debounce active flag and 
-        re-enable the interrupts */
-        
-        
-      
-    } /* end if( IsTimeUp.....) */
-    
-   } /*   if(Button_asStatus[i].... */
-   
-   
-  } /* end  for(u8 i = 0; i < U8_TOTAL_BUTTONS;i++) */
-   
-   
-   
- }/* end ButtonSM_ButtonActive */
-
 /*!-------------------------------------------------------------------------------------------------------------------
 @fn static void ButtonSM_Error(void)
 
 @brief Handle an error here.  For now, the task is just held in this state. 
 */
+
+#if 0
 static void ButtonSM_Error(void)          
 {
   
 } /* end ButtonSM_Error() */
-
+#endif
 
 
 /*--------------------------------------------------------------------------------------------------------------------*/
