@@ -63,8 +63,106 @@ Function Definitions
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* Public Functions */
 /*--------------------------------------------------------------------------------------------------------------------*/
+/*!----------------------------------------------------------------------------------------------------------------------
+@fn bool IsButtonPressed(ButtonNameType eButton_)
+
+@brief Determine if a particular button is currently pressed at the momment in 
+when the function is called.
 
 
+Requires:
+  - Button_asStatus[eButton_] is a valid index
+ 
+@param eButton_ is a valid button
+
+Promises:
+  - Returns TRUE if Button_asStatus[eButton_].eCurrentState is PRESSED
+  - Otherwise, returns FALSE
+*/
+
+bool IsButtonPressed(ButtonNameType eButton_)
+{
+
+  /*Check button for pressed flag*/
+
+    if(Button_asStatus[eButton_].eCurrentState == PRESSED){
+      
+      return(TRUE);
+    }
+    else {
+      
+      return(FALSE);     
+      }
+    
+
+
+  
+
+} /* end IsButtonPressed() */
+
+
+  
+/*!----------------------------------------------------------------------------------------------------------------------
+@fn void ButtonAcknowledged(ButtonNameType eButton_)
+
+@brief Clears a specific button's bNewPressFlag
+
+Requires:
+  - Button_asStatus[eButton_] is a valid index
+ 
+@param eButton_ is a valid button
+
+Promises:
+- Button_asStatus[eButton_].bNewPressFlag will be assigned the value of FALSE
+
+
+*/
+
+void ButtonAcknowledged(ButtonNameType eButton_)
+{
+
+  /*Clear specific button's bNewPressFlag*/
+
+     Button_asStatus[eButton_].bNewPressFlag = FALSE;
+   
+} /* end ButtonAcknowledged() */
+
+/*!----------------------------------------------------------------------------------------------------------------------
+
+@fn bool WasButtonPressed(ButtonNameType eButton_)
+
+@brief Determine if a particular button was pressed since this function was called
+
+
+Requires:
+  - Button_asStatus[eButton_] is a valid index
+ 
+@param eButton_ is a valid button
+
+Promises:
+  - Returns TRUE if Button_asStatus[eButton_].bNewPressFlag is TRUE (Not Acknowledged)
+  - Otherwise, returns FALSE
+*/
+
+bool WasButtonPressed(ButtonNameType eButton_)
+{
+
+  /*Check button was pressed*/
+
+    if(Button_asStatus[eButton_].bNewPressFlag == TRUE){
+      ButtonAcknowledged(eButton_);
+      return(TRUE);
+    }
+    else {
+      
+      return(FALSE);     
+      }
+    
+
+
+  
+
+} /* end WasButtonPressed() */
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* Protected Functions */
@@ -192,7 +290,6 @@ void ButtonStartDebounce(u32 u32BitPosition_, PortOffsetType ePort_)
    
   }
   } /* end ButtonStartDebounce */
-  
   
 
 /*--------------------------------------------------------------------------------------------------------------------*/

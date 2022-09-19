@@ -55,6 +55,9 @@ Function Declarations
 void ButtonInitialize(void);                        
 void ButtonRunActiveState(void);
 void ButtonStartDebounce(u32 u32BitPosition_, PortOffsetType ePort_);
+bool IsButtonPressed(ButtonNameType eButton_);
+void ButtonAcknowledged(ButtonNameType eButton_);
+bool IsButtonPressed(ButtonNameType eButton_);
 
 
 /*--------------------------------------------------------------------------------------------------------------------*/
