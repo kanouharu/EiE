@@ -40,6 +40,7 @@ Constants / Definitions
 
 static u32 U32_DEBOUNCE_TIME = 5;
 
+static u32 U32_HOLD_TIME = 500;
 
 /***********************************************************************************************************************
 Function Declarations
@@ -58,6 +59,9 @@ void ButtonStartDebounce(u32 u32BitPosition_, PortOffsetType ePort_);
 bool IsButtonPressed(ButtonNameType eButton_);
 void ButtonAcknowledged(ButtonNameType eButton_);
 bool IsButtonPressed(ButtonNameType eButton_);
+bool WasButtonPressed(ButtonNameType eButton_);
+bool IsButtonHeld(ButtonNameType eButton_);
+
 
 
 /*--------------------------------------------------------------------------------------------------------------------*/

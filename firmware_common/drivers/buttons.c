@@ -163,6 +163,43 @@ bool WasButtonPressed(ButtonNameType eButton_)
   
 
 } /* end WasButtonPressed() */
+/*!----------------------------------------------------------------------------------------------------------------------
+
+@fn bool IsButtonHeld(ButtonNameType eButton_)
+
+@brief Determine if a particular button has been held for a certain period of time
+
+Requires:
+  - Button_asStatus[eButton_] is a valid index
+ 
+@param eButton_ is a valid button
+
+Promises:
+  - Returns TRUE if Button_asStatus[eButton_].bNewPressFlag is TRUE (Not Acknowledged)
+  - Otherwise, returns FALSE
+*/
+
+bool IsButtonHeld(ButtonNameType eButton_)
+{
+
+  /*Check button is being held*/
+
+    if(Button_asStatus[eButton_].eCurrentState == PRESSED &&
+       IsTimeUp(&Button_asStatus[eButton_].u32DebounceTimeStart, U32_HOLD_TIME)){
+       
+
+      return(TRUE);
+    }
+    else {
+
+      return(FALSE);     
+      }
+    
+
+
+  
+
+} /* end WasButtonPressed() */
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* Protected Functions */
@@ -346,8 +383,6 @@ Promises:
       
          Button_pfnStateMachine = ButtonSM_ButtonActive;   
          
-         ///* Curious */************************************
-         LedOn(ORANGE);
 
     /* Check if debounce period is over */
       if(IsTimeUp(&Button_asStatus[i].u32DebounceTimeStart, U32_DEBOUNCE_TIME))
@@ -403,8 +438,6 @@ Promises:
         Button_asStatus[i].bDebounceActive = FALSE;
         *pu32InterruptAddress = G_asBspButtonConfigurations[i].u32BitPosition;
       
-        ///* Curious */ ******************************
-        LedOff(ORANGE);
         
     } /* end if( IsTimeUp.....) */
     
