@@ -41,7 +41,7 @@ void main(void)
   ClockSetup();
   GpioSetup();
   InterruptSetup();
-  
+  SysTickSetup();
   
   /* Driver initialization */
   LedInitialize();

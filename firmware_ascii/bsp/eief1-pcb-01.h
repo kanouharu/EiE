@@ -91,6 +91,11 @@ typedef enum {BUTTON0 = 0, BUTTON1, BUTTON2, BUTTON3, NOBUTTON} ButtonNameType;
 #define MCK                       CCLK_VALUE                                 /*!< @brief Alternate name for CPU clock 48 MHz */
 #define PERIPHERAL_DIVIDER        (u32)1                                     /*!< @brief Peripheral clock divider */
 #define PCLK_VALUE                CCLK_VALUE / PERIPHERAL_DIVIDER            /*!< @brief Peripheral clock 48 MHz */
+#define SYSTICK_DIVIDER           (u32)8                                     /*!< @brief System Tick scaling value */
+
+/* To get 1ms tick, need SYSTICK_COUNT to be 0.001 * Systic Clock.
+Should be 6000 for 48MHz MCK. */
+#define U32_SYSTICK_COUNT         (u32)(0.001 * (MCK / SYSTICK_DIVIDER))
 
 
 /***********************************************************************************************************************
@@ -117,7 +122,7 @@ void WatchDogSetup(void);
 void ClockSetup(void);
 void GpioSetup(void);
 void SystemSleep(void);
-
+void SysTickSetup(void);
 
 /***********************************************************************************************************************
 !!!!! GPIO pin names
@@ -456,7 +461,22 @@ Since we want PLLACK at 96 MHz:
     00 [1] "
 */
 
+#define SYSTIC_CTRL_INIT  (u32)0x00000003
+/* Bit Set Description
+    31:20 Reserved
+    
+    19 [0]  Reserved
+    18 [0]  "
+    17 [0]  "
+    16 [0]  Countflag (read only)
 
+    15-04 [0]  Reserved
+
+    03 [0]  "
+    02 [0]  Clock source is CPU clock / 8
+    01 [0]  System tick interrupt on
+    00 [0]  System tick is enabled
+*/
 /***********************************************************************************************************************
 ##### GPIO setup values
 ***********************************************************************************************************************/

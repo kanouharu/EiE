@@ -221,6 +221,30 @@ void GpioSetup(void)
   AT91C_BASE_PIOB->PIO_SCDR   = PIOB_SCDR_INIT;
   
 } /* end GpioSetup() */
+  
+  /*!---------------------------------------------------------------------------------------------------------------------
+@fn void SysTicSetup(void)
+
+@brief Initializes the 1ms and 1s System Tick off the core timer
+
+Requires:
+-NVIC -Where the SysTick timmer config registers are [User Guide Lies!] - is setup and SysTick handler is installed
+
+Promises:
+- Both global system timers are reset and the SysTick core timer is configured
+
+*/
+void SysTickSetup(void)
+{    
+  G_u32SystemTime1ms = 0;
+  G_u32SystemTime1s = 0;
+  
+  /* Load the SysTick Counter Value */
+  AT91C_BASE_NVIC->NVIC_STICKRVR =   U32_SYSTICK_COUNT -1;
+  AT91C_BASE_NVIC->NVIC_STICKCVR =  (0x00);
+  AT91C_BASE_NVIC->NVIC_STICKCSR =  SYSTIC_CTRL_INIT;
+    
+} /* end SysTickSetup() */
 
 
 /*!---------------------------------------------------------------------------------------------------------------------
