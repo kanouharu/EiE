@@ -229,6 +229,31 @@ void PIOB_IrqHandler(void)
 } /* end PIOB_IrqHandler()  */
 
 
+/*!-------------------------------------------------------------------------------------------------------------------
+@fn void SysTick_Handler(void)
+
+@brief  Handler for SysTick timer, which should keep system time acurrately 
+ 
+Requires:
+- 
+
+Promises:
+- 
+*/
+
+void SysTick_Handler(void)
+{
+  /* Clear the sleep flag */
+  G_u32SystemFlags &= ~_SYSTEM_SLEEPING;
+  
+  /* Update Timers */
+  G_u32SystemTime1ms++;
+  if( (G_u32SystemTime1ms % 1000) == 0)
+  {
+    G_u32SystemTime1s++;
+  }
+} /* end PIOB_IrqHandler()  */
+
 
 
 /*--------------------------------------------------------------------------------------------------------------------*/

@@ -25,7 +25,7 @@ PROTECTED FUNCTIONS
 
 #include "configuration.h"
 
-extern	void kill_x_cycles(u32);
+
 
 /***********************************************************************************************************************
 Global variable definitions with scope across entire project.
@@ -252,34 +252,27 @@ void SysTickSetup(void)
 
 @brief Puts the system into sleep mode.
 
-Right now, sleep mode is just a for loop that does nothing
-for 1ms of time. So it's more like "lazy" mode, even though
-it's running full speed and burning power.
 
 Requires:
 - Main clock is 48MHz
-- The "for" loop is 4 instruction cycles
-
+- 
 Promises:
-- Processor will block to kill the desired time
 
 */
 void SystemSleep(void)
 {    
-  /* Set the sleep flag (which doesn't do anything yet) */
+
+  /*Set the sysyem control register for Sleep (but not Deep Sleep) */
+  AT91C_BASE_PMC->PMC_FSMR &= ~AT91C_PMC_LPM;
+  AT91C_BASE_NVIC->NVIC_SCR &=  ~AT91C_NVIC_SLEEPDEEP;
+
+    /* Set the sleep flag (Cleared only in SysTick ISR) */
   G_u32SystemFlags |= _SYSTEM_SLEEPING;
 
-  /* Kill the desired number of instructions */
-  kill_x_cycles(48000);
-
-  /* Clear the sleep flag */
-  G_u32SystemFlags &= ~_SYSTEM_SLEEPING;
-  
-  /* Update Timers */
-  G_u32SystemTime1ms++;
-  if( (G_u32SystemTime1ms % 1000) == 0)
+  /* Now enter the selected LPM. Sweet dreams, Cortex <3 */
+  while(G_u32SystemFlags & _SYSTEM_SLEEPING) 
   {
-    G_u32SystemTime1s++;
+    __WFI();
   }
   
 } /* end SystemSleep(void) */

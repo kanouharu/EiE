@@ -110,6 +110,7 @@ Promises:
 */
 void UserApp1Initialize(void)
 { 
+  LedBlink(BLUE,LED_1HZ);
   /* If good initialization, set state to Idle */
   if( 1 )
   {
