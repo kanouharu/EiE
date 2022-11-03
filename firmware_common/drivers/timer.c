@@ -52,6 +52,34 @@ Function Definitions
 /*--------------------------------------------------------------------------------------------------------------------*/
 /*! @publicsection */                                                                                            
 /*--------------------------------------------------------------------------------------------------------------------*/
+/*!----------------------------------------------------------------------------------------------------------------------
+@fn void TimerSet(TimerChannelType eTimerChannel_, u16 u16TimerValue_)
+
+@brief  Sets the timer tick period (interrupt rate).
+
+Requires:
+-TimerStop SHOULD BE CALLED BEFORE, and TimerStart should be called after this
+function to reset the counter and avoid gliches.
+
+@param eTimerChannel_ holds a valid channel
+@param u16TimerValue_ x in ticks
+
+Promises:
+- Updates register TC_RC value with u16TimerValue_
+
+*/
+void TimerSet(TimerChannelType eTimerChannel_, u16 u16TimerValue_)
+{
+  
+  /* Build the offset to the selected peripheral */
+  u32 u32TimerBaseAddress = (u32)AT91C_BASE_TC0;
+  u32TimerBaseAddress += (u32)eTimerChannel_;
+   
+  /* Load the new timer value */
+  (AT91_CAST(AT91PS_TC)u32TimerBaseAddress)->TC_RC =
+                                          (u32)(u16TimerValue_) & 0x0000FFFF;
+
+} /* end TimerSet() */
 
 
 
@@ -73,10 +101,25 @@ Promises:
 */
 void TimerInitialize(void)
 {
+  /* Load the block configuration regusters*/
+  
+  AT91C_BASE_TCB0->TCB_BMR = TCB_BMR_INIT;
+  
+  /* Load Channel 1 settings */
+  
+  AT91C_BASE_TC1->TC_CMR = TC1_CMR_INIT;
+  AT91C_BASE_TC1->TC_RC = TC1_RC_INIT;
+  AT91C_BASE_TC1->TC_IER  = TC1_IER_INIT;
+  AT91C_BASE_TC1->TC_IDR  = TC1_IDR_INIT;    
+  AT91C_BASE_TC1->TC_CCR  = TC1_CCR_INIT;
+
   
   /* If good initialization, set state to Idle */
   if( 1 )
   {
+    
+    NVIC_ClearPendingIRQ(IRQn_TC1);
+    NVIC_EnableIRQ(IRQn_TC1);
     Timer_StateMachine = TimerSM_Idle;
   }
   else
