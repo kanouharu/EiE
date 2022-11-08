@@ -81,6 +81,120 @@ void TimerSet(TimerChannelType eTimerChannel_, u16 u16TimerValue_)
 
 } /* end TimerSet() */
 
+/*!----------------------------------------------------------------------------------------------------------------------
+@fn void TimerStart(TimerChannelType eTimerChannel_)
+
+@brief  Start the timer
+
+Requires:
+-
+
+@param eTimerChannel_ holds a valid channel
+
+Promises:
+- Updates register TC_RC value with u16TimerValue_
+
+*/
+void TimerStart(TimerChannelType eTimerChannel_)
+{
+  
+  /* Build the offset to the selected peripheral */
+  u32 u32TimerBaseAddress = (u32)AT91C_BASE_TC0;
+  u32TimerBaseAddress += (u32)eTimerChannel_;
+   
+  /* Enable counter if disabled using switches because I like switches */
+  switch ((AT91_CAST(AT91PS_TC)u32TimerBaseAddress)->TC_CCR) {
+    case TC1_CCR_INIT:
+      (AT91_CAST(AT91PS_TC)u32TimerBaseAddress)->TC_CCR ^= (u32)0x00000002;
+    default:
+      break;
+      
+  }
+  
+} /* end TimerStart() */
+
+/*!----------------------------------------------------------------------------------------------------------------------
+@fn void TimerStop(TimerChannelType eTimerChannel_)
+
+@brief  Stop the timer
+
+Requires:
+-
+@param eTimerChannel_ holds a valid channel
+
+
+Promises:
+-
+
+*/
+void TimerStop(TimerChannelType eTimerChannel_)
+{
+  
+  /* Build the offset to the selected peripheral */
+  u32 u32TimerBaseAddress = (u32)AT91C_BASE_TC0;
+  u32TimerBaseAddress += (u32)eTimerChannel_;
+   
+    /* Disable counter if enabled */
+  if((AT91_CAST(AT91PS_TC)u32TimerBaseAddress)->TC_CCR != TC1_CCR_INIT) {
+    
+      (AT91_CAST(AT91PS_TC)u32TimerBaseAddress)->TC_CCR = TC1_CCR_INIT;
+  }
+} /* end TimerStop() */
+
+/*!----------------------------------------------------------------------------------------------------------------------
+@fn u16 TimerGetTime(TimerChannelType eTimerChannel_)
+
+@brief Returns timer counter value for a channel.
+
+Requires:
+-
+
+@param eTimerChannel_ holds a valid channel
+
+
+Promises:
+
+*/
+u16 TimerGetTime(TimerChannelType eTimerChannel_)
+{
+  
+  /* Build the offset to the selected peripheral */
+  u32 u32TimerBaseAddress = (u32)AT91C_BASE_TC0;
+  u32TimerBaseAddress += (u32)eTimerChannel_;
+   
+  /* Get the current timer value */
+  return (u16)(AT91_CAST(AT91PS_TC)u32TimerBaseAddress)->TC_CV;
+} /* end TimerSet() */
+
+/*!----------------------------------------------------------------------------------------------------------------------
+@fn void TimerAssignCallBack(TimerChannelType eTimerChannel_, fnCode_type fpUserCallback_ )
+
+@brief  Sets callback, presumably for TC interrupt.
+
+Requires:
+-
+@param eTimerChannel_ holds a valid channel
+@param fpUserCallback_ is a fn pointer
+
+Promises:
+- 
+
+*/
+
+
+void TimerAssignCallBack(TimerChannelType eTimerChannel_, fnCode_type fpUserCallback_ )
+{
+  
+  /* Build the offset to the selected peripheral */
+  u32 u32TimerBaseAddress = (u32)AT91C_BASE_TC0;
+  u32TimerBaseAddress += (u32)eTimerChannel_;
+   
+  /* Load the new timer value */
+  
+  //
+  
+} /* end TimerSet() */
+
 
 
 /*--------------------------------------------------------------------------------------------------------------------*/
