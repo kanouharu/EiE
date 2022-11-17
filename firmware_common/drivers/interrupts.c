@@ -35,7 +35,8 @@ extern volatile u32 G_u32SystemTime1ms;                /*!< @brief From main.c *
 extern volatile u32 G_u32SystemTime1s;                 /*!< @brief From main.c */
 extern volatile u32 G_u32SystemFlags;                  /*!< @brief From main.c */
 extern volatile u32 G_u32ApplicationFlags;             /*!< @brief From main.c */
-
+extern volatile u32 Timer_u32Timer1Counter;            /*!< @brief From timer.c */
+static fnCode_type Timer_fpTimer1Callback;      /*!< @brief From timer.c */
 
 /***********************************************************************************************************************
 Global variable definitions with scope limited to this local application.
@@ -202,8 +203,34 @@ void PIOB_IrqHandler(void)
   
 } /* end PIOB_IrqHandler() */
 
+/*!----------------------------------------------------------------------------------------------------------------------
+@fn ISR void TC1_IrqHandler(void)
 
+@brief Parses the TC1 interrupts and handles them appropriately.  
 
+Note that all enabled TC1 iinterrupts are ORed and will trigger this handler, 
+therefore, any expected interrupt that is enabled must be parsed out and handled.
+
+Requires: NONE 
+
+Promises:
+- If Chanel1 RC: Timer Channel 1 is reset and automatically 
+
+*/
+
+void TC1_IrqHandler(void)
+{
+  /* Check for RC compare interrupt - READING THE TC_SR clears  the bit if set */
+  if( AT91C_BASE_TC1->TC_SR & AT91C_TC_CPCS)
+  {
+    Timer_u32Timer1Counter++;
+    Timer_fpTimer1Callback();
+  }
+  
+   /* Clear the TC1 pending flag and exit */
+      NVIC_ClearPendingIRQ(IRQn_TC1);
+
+} /* End TC1_IrqHandler */
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* End of File */
 /*--------------------------------------------------------------------------------------------------------------------*/

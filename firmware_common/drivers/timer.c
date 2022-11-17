@@ -42,9 +42,12 @@ extern volatile u32 G_u32ApplicationFlags;         /*!< @brief From main.c */
 Global variable definitions with scope limited to this local application.
 Variable names shall start with "Timer_<type>" and be declared as static.
 ***********************************************************************************************************************/
+//Discrepency in coding style between text and salvaged code
 static fnCode_type Timer_StateMachine;            /*!< @brief The state machine function pointer */
+static fnCode_type Timer_fpTimer1Callback;            /*!< @brief The Timer ISR callback pointer */
 
-
+//??
+volatile u32 Timer_u32Timer1Counter = 0;
 /**********************************************************************************************************************
 Function Definitions
 **********************************************************************************************************************/
@@ -102,16 +105,10 @@ void TimerStart(TimerChannelType eTimerChannel_)
   u32 u32TimerBaseAddress = (u32)AT91C_BASE_TC0;
   u32TimerBaseAddress += (u32)eTimerChannel_;
    
-  /* Enable counter if disabled using switches because I like switches */
-  switch ((AT91_CAST(AT91PS_TC)u32TimerBaseAddress)->TC_CCR) {
-    case TC1_CCR_INIT:
-      (AT91_CAST(AT91PS_TC)u32TimerBaseAddress)->TC_CCR ^= (u32)0x00000002;
-    default:
-      break;
-      
-  }
-  
-} /* end TimerStart() */
+  /* Ensure clock is enabled and triggered */
+  (AT91_CAST(AT91PS_TC)u32TimerBaseAddress)->TC_CCR |= (AT91C_TC_CLKEN | 
+                                                         AT91C_TC_SWTRG);
+   }/* end TimerStart() */
 
 /*!----------------------------------------------------------------------------------------------------------------------
 @fn void TimerStop(TimerChannelType eTimerChannel_)
@@ -135,10 +132,11 @@ void TimerStop(TimerChannelType eTimerChannel_)
   u32TimerBaseAddress += (u32)eTimerChannel_;
    
     /* Disable counter if enabled */
-  if((AT91_CAST(AT91PS_TC)u32TimerBaseAddress)->TC_CCR != TC1_CCR_INIT) {
-    
-      (AT91_CAST(AT91PS_TC)u32TimerBaseAddress)->TC_CCR = TC1_CCR_INIT;
-  }
+
+  /* Ensure clock is enabled and triggered */
+  (AT91_CAST(AT91PS_TC)u32TimerBaseAddress)->TC_CCR |= AT91C_TC_CLKDIS;
+  
+
 } /* end TimerStop() */
 
 /*!----------------------------------------------------------------------------------------------------------------------
@@ -163,43 +161,70 @@ u16 TimerGetTime(TimerChannelType eTimerChannel_)
   u32TimerBaseAddress += (u32)eTimerChannel_;
    
   /* Get the current timer value */
-  return (u16)(AT91_CAST(AT91PS_TC)u32TimerBaseAddress)->TC_CV;
-} /* end TimerSet() */
+  return ((u16) ((AT91_CAST(AT91PS_TC)u32TimerBaseAddress)->TC_CV & 0x0000FFFF));
+} /* end TimerGetTime() */
 
 /*!----------------------------------------------------------------------------------------------------------------------
-@fn void TimerAssignCallBack(TimerChannelType eTimerChannel_, fnCode_type fpUserCallback_ )
+@fn  void TimerAssignCallBack(TimerChannelType eTimerChannel_, fnCode_type fpUserCallback_ )
 
-@brief  Sets callback, presumably for TC interrupt.
+@brief  Sets callback function pointer passed to Timer Counter ISR.
 
 Requires:
--
+- Requesite ISR to be written for channel
+- Seperate, channel specific function pointer to be defined with global scope
+
 @param eTimerChannel_ holds a valid channel
-@param fpUserCallback_ is a fn pointer
+@param eTimerChannel_ holds a valid function pointer
+
 
 Promises:
-- 
 
 */
-
-
-void TimerAssignCallBack(TimerChannelType eTimerChannel_, fnCode_type fpUserCallback_ )
+void TimerAssignCallback(TimerChannelType eTimerChannel_, fnCode_type fpUserCallback_ )
 {
   
-  /* Build the offset to the selected peripheral */
-  u32 u32TimerBaseAddress = (u32)AT91C_BASE_TC0;
-  u32TimerBaseAddress += (u32)eTimerChannel_;
-   
-  /* Load the new timer value */
-  
-  //
-  
-} /* end TimerSet() */
+  switch (eTimerChannel_)
+  {
+   case TIMER0_CHANNEL0:
+      // Nothing implemented for TC0
+     break;
+   case TIMER0_CHANNEL1:
+     Timer_fpTimer1Callback = fpUserCallback_;
+     break;
+   case TIMER0_CHANNEL2:
+      // Nothing implemented for TC2
+      break;
+  default:
+    break;
+         }
+    
+    
+} /* end TimerAssignCallBack() */
+
 
 
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 /*! @protectedsection */                                                                                            
 /*--------------------------------------------------------------------------------------------------------------------*/
+
+  /*!----------------------------------------------------------------------------------------------------------------------
+@fn void TimerDefaultCallBack(void)
+
+@brief An empty function that the timer Callback points to by default. Expected 
+that the user will set their own.
+
+Requires:
+Nothing. 
+*/
+
+
+static void TimerDefaultCallBack(void)
+{
+  
+
+  
+} /* end TimerDefaultCallBack() */
 
 /*!--------------------------------------------------------------------------------------------------------------------
 @fn void TimerInitialize(void)
@@ -235,6 +260,7 @@ void TimerInitialize(void)
     NVIC_ClearPendingIRQ(IRQn_TC1);
     NVIC_EnableIRQ(IRQn_TC1);
     Timer_StateMachine = TimerSM_Idle;
+    Timer_fpTimer1Callback = TimerDefaultCallBack;
   }
   else
   {
@@ -244,7 +270,7 @@ void TimerInitialize(void)
 
 } /* end TimerInitialize() */
 
-  
+
 /*!----------------------------------------------------------------------------------------------------------------------
 @fn void TimerRunActiveState(void)
 
