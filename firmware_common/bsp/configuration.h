@@ -55,8 +55,11 @@ Includes
 #endif /* MPGL2 */
 
 /* Common driver header files */
+#include "buttons.h"
 #include "leds.h" 
 #include "buttons.h" 
+#include "timer.h"
+
 
 /* Common application header files */
 #include "user_app1.h"

@@ -44,9 +44,9 @@ void main(void)
   SysTickSetup();
   
   /* Driver initialization */
-  LedInitialize();
   ButtonInitialize();
-
+  TimerInitialize();  
+  LedInitialize();
 
   /* Application initialization */
   UserApp1Initialize();
@@ -57,7 +57,9 @@ void main(void)
     WATCHDOG_BONE();
 
     /* Drivers */
+    ButtonRunActiveState();
     LedRunActiveState();
+    TimerRunActiveState(); 
     ButtonRunActiveState();
     
     /* Applications */
@@ -70,6 +72,7 @@ void main(void)
     
     
     HEARTBEAT_ON();
+    
   } /* end while(1) main super loop */
   
 } /* end main() */

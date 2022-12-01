@@ -35,7 +35,8 @@ extern volatile u32 G_u32SystemTime1ms;                /*!< @brief From main.c *
 extern volatile u32 G_u32SystemTime1s;                 /*!< @brief From main.c */
 extern volatile u32 G_u32SystemFlags;                  /*!< @brief From main.c */
 extern volatile u32 G_u32ApplicationFlags;             /*!< @brief From main.c */
-
+extern volatile u32 Timer_u32Timer1Counter;            /*!< @brief From timer.c */
+static fnCode_type Timer_fpTimer1Callback;      /*!< @brief From timer.c */
 
 /***********************************************************************************************************************
 Global variable definitions with scope limited to this local application.
@@ -104,130 +105,118 @@ Interrupt Service Routine Definitions
 /*! @protectedsection */                                                                                            
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-/*!-------------------------------------------------------------------------------------------------------------------
-@fn ISR void PIOA_Irqhandler(void)
 
-@brief Parses the PORTA GPIO interrupts and handles them appropriately.
+  
+/*!----------------------------------------------------------------------------------------------------------------------
+@fn ISR void PIOA_IrqHandler(void)
 
-Note that all PORTA GPIO interrupts are ORed and will trigger this handler,
-so any expected interrupt that is enabled must be parsed out and handled.
+@brief Parses the PORTA GPIO interrupts and handles them appropriately.  
+
+Note that all PORTA GPIO interrupts are ORed and will trigger this handler, 
+therefore any expected interrupt that is enabled must be parsed out and handled.
 
 Requires:
 - The button IO bits match the interrupt flag locations
 
 Promises:
-- Buttons: sets the active button's deboucing flag, clears the interrupt
+- Buttons: sets the active button's debouncing flag, clears the interrupt
   and initializes the button's debounce timer.
-*/
 
+*/
 void PIOA_IrqHandler(void)
 {
-  /************ NO BREAKPOINTS BEFORE PIO_ISR READS, FOR THE LOVE OF ARM!
-    A debuggering viewing this register will clear flags needed!! */
+  u32 u32GPIOInterruptSources;
+  u32 u32ButtonInterrupts;
+  u32 u32CurrentButtonLocation;
 
-    u32 u32GPIOInterruptSources;
-    u32 u32ButtonInterrupts;
-    u32 u32CurrentButtonLocation;
+  /* Grab a snapshot of the current PORTA status flags (clears all flags) */
+  u32GPIOInterruptSources = AT91C_BASE_PIOA->PIO_ISR;
 
-   
-    u32GPIOInterruptSources = AT91C_BASE_PIOA->PIO_ISR;
-
-  /*********** BREAKPOINT-SAFE ZONE STARTS HERE.  <3 */
-
-  /* Mask out irrelevant PIOA interrupt flags from signal */
-   u32ButtonInterrupts = (u32GPIOInterruptSources & GPIOA_BUTTONS ); 
-   
-  /* Check if Button signal was pressent in flags */
-   if (u32ButtonInterrupts)
-   {
-     
-   /* Scan though the flags looking for those that are set. */
-    u32 u32CurrentButtonLocation = 0x00000001;
-    
-    for(u8 i = 0; i < 31; i++)
+  /******** DO NOT set a breakpoint before this line of the ISR because the debugger
+  will "read" PIO_ISR and clear the flags. ********/
+  
+  /* Examine button interrupts */
+  u32ButtonInterrupts = u32GPIOInterruptSources & GPIOA_BUTTONS;
+  
+  /* Check if any port A buttons interrupted */
+  if(u32ButtonInterrupts)
+  {
+    /* Scan through the flags looking for ones that are set */
+    u32CurrentButtonLocation = 0x00000001;
+    for(u8 i = 0; i < 32; i++)
     {
-           
-      /* If the bit is set, then start debouncing */
-     
-     if(u32ButtonInterrupts & u32CurrentButtonLocation)
-     {
-     ButtonStartDebounce(u32CurrentButtonLocation, PORTA);
+      /* If the bit is set, then start debouncing (also disables interrupt) */
+      if(u32ButtonInterrupts & u32CurrentButtonLocation)
+      {
+        ButtonStartDebounce(u32CurrentButtonLocation, PORTA);
+      }
+      
+      /* Shift the mask to look at the next bit */
+      u32CurrentButtonLocation <<= 1;
     }
-    
-     //My First Practical Logical Bit Shift!!! Yay! So Cool! 
-     u32CurrentButtonLocation <<= 1; 
-     
-    }
-    
-   }
+        
+  } /* end port A button interrupt checking */
+  
   /* Clear the PIOA pending flag and exit */
   NVIC_ClearPendingIRQ(IRQn_PIOA);
-} /* end PIOA_IrqHandler()  */
+  
+} /* end PIOA_IrqHandler() */
 
-/*!-------------------------------------------------------------------------------------------------------------------
-@fn ISR void PIOB_Irqhandler(void)
 
-@brief Parses the PORTB GPIO interrups and handles them appropriately.
+/*!----------------------------------------------------------------------------------------------------------------------
+@fn ISR void PIOB_IrqHandler(void)
 
-Note that all PORTB GPIO interrupts are ORed and will trigger this handler,
+@brief Parses the PORTB GPIO interrupts and handles them appropriately.  
+
+Note that all PORTB GPIO interrupts are ORed and will trigger this handler, 
 so any expected interrupt that is enabled must be parsed out and handled.
 
 Requires:
 - The button IO bits match the interrupt flag locations
 
 Promises:
-- Buttons: sets the active button's deboucing flag, clears the intterupt
+- Buttons: sets the active button's debouncing flag, clears the interrupt
   and initializes the button's debounce timer.
-*/
 
+*/
 void PIOB_IrqHandler(void)
 {
-  /************ NO BREAKPOINTS BEFORE PIO_ISR READS, FOR THE LOVE OF ARM!
-    A debuggering viewing this register will clear flags needed!! */
+  u32 u32GPIOInterruptSources;
+  u32 u32ButtonInterrupts;
+  u32 u32CurrentButtonLocation;
 
-    u32 u32GPIOInterruptSources;
-    u32 u32ButtonInterrupts;
-    u32 u32CurrentButtonLocation;
+  /* Grab a snapshot of the current PORTB status flags (clears all flags) */
+  u32GPIOInterruptSources = AT91C_BASE_PIOB->PIO_ISR;
 
-   
-    u32GPIOInterruptSources = AT91C_BASE_PIOB->PIO_ISR;
-
-  /*********** BREAKPOINT-SAFE ZONE STARTS HERE.  <3 */
-
-  /* Mask out irrelevant PIOA interrupt flags from signal */
-   u32ButtonInterrupts = (u32GPIOInterruptSources & GPIOB_BUTTONS ); 
-   
-  /* Check if Button signal was pressent in flags */
-   if (u32ButtonInterrupts)
-   {
-     
-   /* Scan though the flags looking for those that are set. */
-    u32 u32CurrentButtonLocation = 0x00000001;
-    
-    for(u8 i = 0; i < 31; i++)
+  /******** DO NOT set a breakpoint before this line of the ISR because the debugger
+  will "read" PIO_ISR and clear the flags. ********/
+  
+  /* Examine button interrupts */
+  u32ButtonInterrupts = u32GPIOInterruptSources & GPIOB_BUTTONS;
+  
+  /* Check if any port B buttons interrupted */
+  if(u32ButtonInterrupts)
+  {
+    /* Scan through the flags looking for ones that are set */
+    u32CurrentButtonLocation = 0x00000001;
+    for(u8 i = 0; i < 32; i++)
     {
-           
-      /* If the bit is set, then start debouncing */
-     
-     if(u32ButtonInterrupts & u32CurrentButtonLocation)
-     {
-     ButtonStartDebounce(u32CurrentButtonLocation, PORTB);
+      /* If the bit is set, then start debouncing (also disables interrupt) */
+      if(u32ButtonInterrupts & u32CurrentButtonLocation)
+      {
+        ButtonStartDebounce(u32CurrentButtonLocation, PORTB);
+      }
+      
+      /* Shift the mask to look at the next bit */
+      u32CurrentButtonLocation <<= 1;
     }
-    
-
-    
-    //My First Practical Logical Bit Shift!!! Yay! So Cool! 
-
-     u32CurrentButtonLocation <<= 1; 
-     
-    }
-    
-   }
-
+        
+  } /* end port B button interrupt checking */
+  
   /* Clear the PIOB pending flag and exit */
   NVIC_ClearPendingIRQ(IRQn_PIOB);
-} /* end PIOB_IrqHandler()  */
-
+  
+} /* end PIOB_IrqHandler() */
 
 /*!-------------------------------------------------------------------------------------------------------------------
 @fn void SysTick_Handler(void)
@@ -252,10 +241,36 @@ void SysTick_Handler(void)
   {
     G_u32SystemTime1s++;
   }
-} /* end PIOB_IrqHandler()  */
+} /* end SysTick_Handler()  */
 
+/*!----------------------------------------------------------------------------------------------------------------------
+@fn ISR void TC1_IrqHandler(void)
 
+@brief Parses the TC1 interrupts and handles them appropriately.  
 
+Note that all enabled TC1 iinterrupts are ORed and will trigger this handler, 
+therefore, any expected interrupt that is enabled must be parsed out and handled.
+
+Requires: NONE 
+
+Promises:
+- If Chanel1 RC: Timer Channel 1 is reset and automatically 
+
+*/
+
+void TC1_IrqHandler(void)
+{
+  /* Check for RC compare interrupt - READING THE TC_SR clears  the bit if set */
+  if( AT91C_BASE_TC1->TC_SR & AT91C_TC_CPCS)
+  {
+    Timer_u32Timer1Counter++;
+    Timer_fpTimer1Callback();
+  }
+  
+   /* Clear the TC1 pending flag and exit */
+      NVIC_ClearPendingIRQ(IRQn_TC1);
+
+} /* End TC1_IrqHandler */
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* End of File */
 /*--------------------------------------------------------------------------------------------------------------------*/

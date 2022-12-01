@@ -24,29 +24,9 @@ $$$$$ PWM and Timer setup values
 Type Definitions
 ***********************************************************************************************************************/
 
-/*! 
-@enum LedPortType
-@brief Processor-specific port address offsets.
-*/
-typedef enum {LED_PORTA = 0, LED_PORTB = 0x80} LedPortType;                /*!< @enum @brief Offset between port registers (in 32 bit words) */
-
-/*! 
-@enum LedActiveType
-@brief Real names for type of LED function.
-*/
-typedef enum {LED_ACTIVE_LOW = 0, LED_ACTIVE_HIGH = 1} LedActiveType;      /*!< @enum @brief ACTIVE_HIGH means the LED is on when the pin is at Vcc - hardware dependent */
-
-/*! 
-@struct LedConfigurationType
-@brief LED parameters necessary to fully describe an LED.
-*/
-typedef struct
-{
-  u32 u32BitPosition;             /*!< @brief LED bit position within port */
-  LedPortType ePort;              /*!< @brief LED port position */
-  LedActiveType eActiveState;     /*!< @brief LED hardware active type */
-}LedConfigurationType;
-
+/*----------------------------------------------------------------------------------------------------------------------
+%LED% LED Configuration                                                                                                  
+----------------------------------------------------------------------------------------------------------------------*/
 /*! 
 @enum LedNameType
 @brief Logical names for LEDs in the system.
@@ -1530,7 +1510,7 @@ Tdiv_slclk = 2*(DIV+1)*Tslow_clock.
 */
 
 /* PIO Write Protect Mode Register PIO_WPMR
-Enables the Write Protect if WPKEY corresponds to 0x50494F (“PIO” in ASCII).
+Enables the Write Protect if WPKEY corresponds to 0x50494F (ï¿½PIOï¿½ in ASCII).
 Though this is defined in the user guide, there is no definition in the processor header file.
 We don't want to lock access to the GPIO registers anyway, so we won't use this for now.
 */
