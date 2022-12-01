@@ -31,7 +31,7 @@ Runs required initialzation for the task.  Should only be called once in main in
 void UserApp1RunActiveState(void)
 Runs current task state.  Should only be called once in main loop.
 
-
+*/
 
 /*!*********************************************************************************************************************
 @file user_app1.c                                                                
