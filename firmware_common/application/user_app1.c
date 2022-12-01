@@ -74,26 +74,6 @@ Function Definitions
 
 
 /*!--------------------------------------------------------------------------------------------------------------------
-@fn void UserApp1TimerCallback(void)
-
-@brief
-Toggles LED at Timer1 interrupt.
-
-
-Requires:
-- Automatically called from Timer Interrupt
-
-Promises:
-- White LED commences the togglin'
-
-*/
-void UserApp1TimerCallback(void)
-{
- LedToggle(WHITE); 
-  
-} /*End UserApp1TimerCallback */
-
-/*!--------------------------------------------------------------------------------------------------------------------
 @fn void UserApp1Initialize(void)
 
 @brief
@@ -110,18 +90,6 @@ Promises:
 */
 void UserApp1Initialize(void)
 { 
-  
-  LedOff(WHITE);
-  LedOff(PURPLE);
-  LedBlink(WHITE,LED_4HZ);
-  
-  /* Setup timer1 to clock out 125ms periods. 125ms / 2.6666666us = 46875 */
-  
-  TimerAssignCallback( TIMER0_CHANNEL1, UserApp1TimerCallback);
-  TimerStop(TIMER0_CHANNEL1);
-  TimerSet(TIMER0_CHANNEL1, 46875);
-  TimerStart(TIMER0_CHANNEL1);
-  
   /* If good initialization, set state to Idle */
   if( 1 )
   {
@@ -155,7 +123,6 @@ void UserApp1RunActiveState(void)
 {
   UserApp1_StateMachine();
 
-  
 } /* end UserApp1RunActiveState */
 
 
@@ -176,7 +143,6 @@ State Machine Function Definitions
 static void UserApp1SM_Idle(void)
 {
  
-  int a = 0;
 } /* end UserApp1SM_Idle() */
     
 

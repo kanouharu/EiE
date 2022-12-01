@@ -23,7 +23,7 @@ typedef enum {LED_NORMAL_MODE, LED_BLINK_MODE} LedModeType;
 
 Other blinking rate values may be added as required.  The labels are frequencies, 
 but the values are the toggling period in ms.*/
-typedef enum {LED_0HZ = 0, LED_0_5HZ = 100, LED_1HZ = 500, LED_2HZ = 250, LED_4HZ = 125, LED_8HZ = 63
+typedef enum {LED_0HZ = 0, LED_0_5HZ = 1000, LED_1HZ = 500, LED_2HZ = 250, LED_4HZ = 125, LED_8HZ = 63
              } LedRateType;
 
 /*! 
