@@ -44,6 +44,7 @@ Variable names shall start with "Timer_<type>" and be declared as static.
 ***********************************************************************************************************************/
 //Discrepency in coding style between text and salvaged code
 static fnCode_type Timer_StateMachine;            /*!< @brief The state machine function pointer */
+//Putting it in scope of interrupts.c is tricky. Don't use.
 static fnCode_type Timer_fpTimer1Callback;            /*!< @brief The Timer ISR callback pointer */
 
 //??
@@ -100,14 +101,20 @@ Promises:
 */
 void TimerStart(TimerChannelType eTimerChannel_)
 {
+  /* Light-Duty Hardfault Diagnosis Local Variables*/
+  u32Dummy CCR_Value = (TC1_CCR_INIT | AT91C_TC_CLKEN | AT91C_TC_SWTRG);
+  CCR_Value ^= AT91C_TC_CLKDIS;
   
   /* Build the offset to the selected peripheral */
   u32 u32TimerBaseAddress = (u32)AT91C_BASE_TC0;
   u32TimerBaseAddress += (u32)eTimerChannel_;
    
   /* Ensure clock is enabled and triggered */
+  (AT91_CAST(AT91PS_TC)u32TimerBaseAddress)->TC_CCR ^= AT91C_TC_CLKDIS;
   (AT91_CAST(AT91PS_TC)u32TimerBaseAddress)->TC_CCR |= (AT91C_TC_CLKEN | 
                                                          AT91C_TC_SWTRG);
+   
+   
    }/* end TimerStart() */
 
 /*!----------------------------------------------------------------------------------------------------------------------
@@ -183,22 +190,26 @@ Promises:
 void TimerAssignCallback(TimerChannelType eTimerChannel_, fnCode_type fpUserCallback_ )
 {
   
-  switch (eTimerChannel_)
+   switch(eTimerChannel_)
   {
-   case TIMER0_CHANNEL0:
-      // Nothing implemented for TC0
-     break;
-   case TIMER0_CHANNEL1:
-     Timer_fpTimer1Callback = fpUserCallback_;
-     break;
-   case TIMER0_CHANNEL2:
-      // Nothing implemented for TC2
+    case TIMER0_CHANNEL0:
+    {
       break;
-  default:
-    break;
-         }
-    
-    
+    }
+    case TIMER0_CHANNEL1:
+    {
+      Timer_fpTimer1Callback = fpUserCallback_;
+      break;
+    }
+    case TIMER0_CHANNEL2:
+    {
+      break;
+    }
+    default:
+    {
+      break;
+    }
+  }   
 } /* end TimerAssignCallBack() */
 
 
@@ -252,7 +263,6 @@ void TimerInitialize(void)
   AT91C_BASE_TC1->TC_IDR  = TC1_IDR_INIT;    
   AT91C_BASE_TC1->TC_CCR  = TC1_CCR_INIT;
 
-  
   /* If good initialization, set state to Idle */
   if( 1 )
   {
@@ -260,6 +270,8 @@ void TimerInitialize(void)
     NVIC_ClearPendingIRQ(IRQn_TC1);
     NVIC_EnableIRQ(IRQn_TC1);
     Timer_StateMachine = TimerSM_Idle;
+    
+
     Timer_fpTimer1Callback = TimerDefaultCallBack;
   }
   else
