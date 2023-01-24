@@ -201,7 +201,7 @@ Promises:
 */
 void UserApp1Initialize(void)
 { 
-  TimerTest();
+ // TimerTest();
 
   /* If good initialization, set state to Idle */
   if( 1 )
