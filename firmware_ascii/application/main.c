@@ -40,7 +40,9 @@ void main(void)
   WatchDogSetup(); 
   ClockSetup();
   GpioSetup();
+  PWMSetupAudio();
   InterruptSetup();
+  SysTickSetup();
   
   /* Driver initialization */
   ButtonInitialize();

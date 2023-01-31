@@ -154,8 +154,9 @@ reguardless of what the main loop is doing). Lots of frustration.
 
 Realization: Callback assignment never works as interrupt code isn't able to
 see the function pointer. No implementation of the working interrupt module code
-is avalible in any online respository I've checked. Better to just ignore the problem
-as a solution is not needed.
+is avalible in any online respository, even the final project branches I've checked.
+ Better to just ignore the problem as a solution is not needed to understand the
+ fundamental ideas behind TCs and their uses. 
 */
 void TimerTest(void)
 {

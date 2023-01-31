@@ -103,7 +103,7 @@ void ClockSetup(void);
 void GpioSetup(void);
 void SysTickSetup(void);
 void SystemSleep(void);
-
+void PWMSetupAudio(void);
 
 /***********************************************************************************************************************
 !!!!! GPIO pin names

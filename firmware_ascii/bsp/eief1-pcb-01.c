@@ -218,44 +218,97 @@ void GpioSetup(void)
   
 } /* end GpioSetup() */
 
+/*!---------------------------------------------------------------------------------------------------------------------
+@fn  void SysTickSetup(void)
+@brief Initializes the 1ms and 1s System Ticks off the core timer.
+Requires:
+- NVIC is setup and SysTick handler is installed
+Promises:
+- Both global system timers are reset and the SysTick core timer is configured for 1ms intervals
+*/
+void SysTickSetup(void)
+{
+  G_u32SystemTime1ms = 0;      
+  G_u32SystemTime1s  = 0;   
+  
+  /* Load the SysTick Counter Value */
+  AT91C_BASE_NVIC->NVIC_STICKRVR = U32_SYSTICK_COUNT - 1; 
+  AT91C_BASE_NVIC->NVIC_STICKCVR = (0x00);                                                              
+  AT91C_BASE_NVIC->NVIC_STICKCSR = SYSTICK_CTRL_INIT;
+ 
+} /* end SysTickSetup() */
+
+
+
 
 /*!---------------------------------------------------------------------------------------------------------------------
 @fn void SystemSleep(void)
-
-@brief Puts the system into sleep mode.
-
-Right now, sleep mode is just a for loop that does nothing
-for 1ms of time. So it's more like "lazy" mode, even though
-it's running full speed and burning power.
-
+@brief Puts the system into sleep mode.  
+_SYSTEM_SLEEPING is set here so if the system wakes up because of a non-Systick
+interrupt, it can go back to sleep.
+Deep sleep mode is currently disabled, so maximum processor power savings are 
+not yet realized.  To enable deep sleep, there are certain considerations for 
+waking up that would need to be taken care of.
 Requires:
-- Main clock is 48MHz
-- The "for" loop is 4 instruction cycles
-
+- SysTick is running with interrupt enabled for wake from Sleep LPM
 Promises:
-- Processor will block to kill the desired time
-
+- Configures processor for sleep while still allowing any required
+  interrupt to wake it up.
+- G_u32SystemFlags _SYSTEM_SLEEPING is set
 */
 void SystemSleep(void)
 {    
-  /* Set the sleep flag (which doesn't do anything yet) */
+  /* Set the system control register for Sleep (but not Deep Sleep) */
+  AT91C_BASE_PMC->PMC_FSMR &= ~AT91C_PMC_LPM;
+  AT91C_BASE_NVIC->NVIC_SCR &= ~AT91C_NVIC_SLEEPDEEP;
+   
+  /* Set the sleep flag (cleared only in SysTick ISR */
   G_u32SystemFlags |= _SYSTEM_SLEEPING;
 
-  /* Kill the desired number of instructions */
-  kill_x_cycles(48000);
-
-  /* Clear the sleep flag */
-  G_u32SystemFlags &= ~_SYSTEM_SLEEPING;
-  
-  /* Update Timers */
-  G_u32SystemTime1ms++;
-  if( (G_u32SystemTime1ms % 1000) == 0)
+  /* Now enter the selected LPM */
+  while(G_u32SystemFlags & _SYSTEM_SLEEPING)
   {
-    G_u32SystemTime1s++;
+    __WFI();
   }
   
-} /* end SystemSleep(void) */
+} /* 
 
+/*!---------------------------------------------------------------------------------------------------------------------
+@fn void PWMSetupAudiop(void)
+
+@brief Configures the PWM peripheral for audio operation on the H0 and H1 Channels
+
+
+Requires:
+- Peripheral resources not used for any other functions
+
+Promises:
+- PWM is configured for PWM mode and currently off.
+
+*/
+
+void PWMSetupAudio(void)
+{
+  /*Set all PWM initialization values */
+  AT91C_BASE_PWMC->PWMC_CLK = PWM_CMR0_INIT;
+  
+  AT91C_BASE_PWMC_CH0->PWMC_CMR = PWM_CMR0_INIT;
+  AT91C_BASE_PWMC_CH0->PWMC_CPRDR = PWM_CPRD0_INIT; /* Set current freqency */
+  AT91C_BASE_PWMC_CH0->PWMC_CPRDUPDR = PWM_CPRD0_INIT; /* Latch CPRD values */
+  AT91C_BASE_PWMC_CH0->PWMC_CDTYR = PWM_CDTY0_INIT; /* Set 50% duty */
+  AT91C_BASE_PWMC_CH0->PWMC_CDTYUPDR = PWM_CDTY0_INIT; /* Latch CDTY values */
+  
+  
+  
+  AT91C_BASE_PWMC_CH1->PWMC_CMR = PWM_CMR1_INIT;  
+  AT91C_BASE_PWMC_CH1->PWMC_CPRDR = PWM_CPRD1_INIT; /* Set current frequency */
+  AT91C_BASE_PWMC_CH1->PWMC_CPRDUPDR = PWM_CPRD1_INIT;  /* Latch CPRD values */
+  AT91C_BASE_PWMC_CH1->PWMC_CDTYR = PWM_CDTY1_INIT; /* Set 50% Duty */
+  AT91C_BASE_PWMC_CH1->PWMC_CDTYUPDR = PWM_CDTY1_INIT; /* Latch CDTY values */
+
+  
+  
+} /* end PWMSetupAudio() */
 
 
 /*--------------------------------------------------------------------------------------------------------------------*/

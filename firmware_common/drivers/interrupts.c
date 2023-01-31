@@ -248,13 +248,14 @@ void SysTick_Handler(void)
 
 @brief Parses the TC1 interrupts and handles them appropriately.  
 
-Note that all enabled TC1 iinterrupts are ORed and will trigger this handler, 
+Note that all enabled TC1 interrupts are ORed and will trigger this handler, 
 therefore, any expected interrupt that is enabled must be parsed out and handled.
 
 Requires: NONE 
 
 Promises:
 - If Chanel1 RC: Timer Channel 1 is reset and automatically 
+-
 
 */
 
