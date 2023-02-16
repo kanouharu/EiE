@@ -205,6 +205,8 @@ void UserApp1Initialize(void)
  // TimerTest();
 
   /* If good initialization, set state to Idle */
+  
+  PWMAudioSetFrequency(BUZZER1, 1000);
   if( 1 )
   {
     UserApp1_StateMachine = UserApp1SM_Idle;

@@ -271,7 +271,7 @@ void SystemSleep(void)
     __WFI();
   }
   
-} /* 
+} /* end SystemSleep() */
 
 /*!---------------------------------------------------------------------------------------------------------------------
 @fn void PWMSetupAudiop(void)
@@ -310,6 +310,85 @@ void PWMSetupAudio(void)
   
 } /* end PWMSetupAudio() */
 
+/*!---------------------------------------------------------------------------------------------------------------------
+@fn void void PWMAudioSetFrequency(BuzzerChannelType eChannel_, u16 u16Frequency_)
+
+@brief Configures the PWM peripheral with the desired frequency on the specified
+channel.
+
+If the buzzer is already on, it will change freqnecy (essentially) immediately.
+If it is not on, the new frequency will be audible next time PWMAudioOn() is called.
+
+Example:
+PWMAudioSetFrequency(BUZZER1, 1000);
+(Period 1ms or 6000 ticks, duty @ 50% is 3000 ticks)
+
+Requires:
+- The PWM peripheral is correctly configured for the current processor clock speed.
+- CPRE_CLCK is the clock frequency for the PWM peripheral
+
+@param eChannel_ is the channel of interest and corresponds to the channel bit
+position of the buzzer in the PWM peripheral
+@param u16Frequency_ is in Hertz and should be in the range 100-20000 since 
+that is the audible range. Higher and lower frequencies are allowed, though
+
+Promises:
+- The frequency and duty cycle values for the requested channel are calculated
+and then latched to their respective update registers (CPRDUPDR. CDTYPDR)
+- If the channel is not valid, nothing happens
+
+*/
+
+void PWMAudioSetFrequency(BuzzerChannelType eChannel_, u16 u16Frequency_)
+{
+  AT91PS_PWMC_CH psChannelAddress;
+  u32 u32ChannelPeriod;
+  /* Get the base address of the channel */
+  
+  switch (eChannel_)
+  {
+  case BUZZER1:
+    {
+      psChannelAddress = AT91C_BASE_PWMC_CH0;
+      break;
+    }
+      case BUZZER2:
+    {
+      psChannelAddress = AT91C_BASE_PWMC_CH1;
+      break;
+    }
+    
+  default:
+    {
+      /*Invalid channel */
+      return;
+    }
+    
+  }
+  
+  /* Calculate the period based on the requested frequency.
+    The duty cycle is this value divided by 2 (right shift 1) */
+  u32ChannelPeriod = CPRE_CLCK / u16Frequency_;
+  
+  /* Set different regusters depending on if PWM is alreat running */
+  if (AT91C_BASE_PWMC->PWMC_SR & eChannel_)
+  {
+    /* Buzzer is already running, so use update registers */
+    psChannelAddress->PWMC_CPRDUPDR = u32ChannelPeriod;
+    psChannelAddress->PWMC_CDTYUPDR = u32ChannelPeriod >> 1;
+
+  }
+  else
+  {
+    /* Buzzer is off, so use direct registers */
+    psChannelAddress->PWMC_CPRDR = u32ChannelPeriod;
+    psChannelAddress->PWMC_CDTYR = u32ChannelPeriod >> 1;
+
+  }
+  
+  
+  
+} /* end PWMAudioSetFrequency() */
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* End of File */
