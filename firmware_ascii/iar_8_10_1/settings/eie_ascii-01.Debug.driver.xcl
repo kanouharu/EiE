@@ -6,7 +6,7 @@
 
 "-p" 
 
-"C:\Program Files\IAR Systems\EWARM_8_10_1\arm\CONFIG\debugger\Atmel\ATSAM3U2C.ddf" 
+"G:\Eie\IAR\arm\CONFIG\debugger\Microchip\ATSAM3U2C.ddf" 
 
 "--semihosting" 
 
