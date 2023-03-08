@@ -155,8 +155,7 @@ void ClockSetup(void)
 
   /* Initialize UTMI for USB usage */
   AT91C_BASE_CKGR->CKGR_UCKR |= (AT91C_CKGR_UPLLCOUNT & (3 << 20)) | AT91C_CKGR_UPLLEN;
-  while ( !(AT91C_BASE_PMC->PMC_SR & AT91C_PMC_LOCKU) );
-  
+  while ( !(AT91C_BASE_PMC->PMC_SR & AT91C_PMC_LOCKU) ); 
 } /* end ClockSetup */
 
 
@@ -274,7 +273,7 @@ void SystemSleep(void)
 } /* end SystemSleep() */
 
 /*!---------------------------------------------------------------------------------------------------------------------
-@fn void PWMSetupAudiop(void)
+@fn void PWMSetupAudio(void)
 
 @brief Configures the PWM peripheral for audio operation on the H0 and H1 Channels
 
@@ -390,6 +389,51 @@ void PWMAudioSetFrequency(BuzzerChannelType eChannel_, u16 u16Frequency_)
   
 } /* end PWMAudioSetFrequency() */
 
+/*!---------------------------------------------------------------------------------------------------------------------
+@fn void PWMAudioON(BuzzerChannelType eBuzzerChannel_)
+
+@brief Enables PWM for provided button channel
+
+
+Requires:
+- Peripheral resources not used for any other functions
+- PWM channel fequency set up
+
+*/
+
+void PWMAudioON(BuzzerChannelType eBuzzerChannel_)
+{
+
+  /* Enable the channel */
+  AT91C_BASE_PWMC->PWMC_ENA = (u32)eBuzzerChannel_;
+  
+
+  
+  
+} /* end PWMAudioOn() */
+
+/*!---------------------------------------------------------------------------------------------------------------------
+@fn void PWMAudioOff(BuzzerChannelType eBuzzerChannel_)
+
+@brief Disables PWM for provided button channel
+
+
+Requires:
+- Peripheral resources not used for any other functions
+- PWM channel fequency set up
+
+*/
+
+void PWMAudioOff(BuzzerChannelType eBuzzerChannel_)
+{
+
+  /* Enable the channel */
+  AT91C_BASE_PWMC->PWMC_DIS = (u32)eBuzzerChannel_;
+  
+
+  
+  
+} /* end PWMAudioOn() */
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* End of File */
 /*--------------------------------------------------------------------------------------------------------------------*/

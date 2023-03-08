@@ -117,6 +117,8 @@ void SysTickSetup(void);
 void SystemSleep(void);
 void PWMSetupAudio(void);
 void PWMAudioSetFrequency(BuzzerChannelType eChannel_, u16 u16Frequency_);
+void PWMAudioON(BuzzerChannelType eBuzzerChannel_);
+void PWMAudioOff(BuzzerChannelType eBuzzerChannel_);
 
 /***********************************************************************************************************************
 !!!!! GPIO pin names

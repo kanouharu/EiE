@@ -181,6 +181,99 @@ void TimerTest(void)
 } /* end TimerTest */
 
 
+
+/*!----------------------------------------------------------------------------------------------------------------------
+@fn void BinaryClock(void)
+
+@brief 
+Requires:
+- Red, Orange, yellow, and green leds aren't being used elsewhere;
+- GPIO set up properly.
+- Systick Configured for 1ms loops
+ 
+
+
+*/
+void BinaryClock(void)
+{
+  static u16 u16BlinkCount = 0;
+  static u8 u8BinaryCounter = 0;
+
+  u16BlinkCount++;
+
+/* All discrete LEDs to off 
+  LedOff(WHITE);
+  LedOff(PURPLE);
+  LedOff(BLUE);
+  LedOff(CYAN);
+  LedOff(GREEN);
+  LedOff(YELLOW);
+  LedOff(ORANGE);
+  LedOff(RED);
+  */
+  /* Backlight to white */  
+  LedOn(LCD_RED);
+  LedOn(LCD_GREEN);
+  LedOn(LCD_BLUE);
+
+
+  /* 500ms check and reset */
+  if(u16BlinkCount == 500)
+    {
+      u16BlinkCount = 0;
+      
+      /* Binary counter check and reset at 16 */
+      if ( ++u8BinaryCounter == 16)
+      {
+        
+        u8BinaryCounter = 0;
+      }
+      
+      //LedToggle(PURPLE);
+    }
+  
+     /* Parse the current count to set the LEDs.  
+      RED is bit 0, ORANGE is bit 1, 
+      YELLOW is bit 2, GREEN is bit 3. */
+    
+    if(u8BinaryCounter & 0x01)
+    {
+      LedOn(RED);
+    }
+    else
+    {
+      LedOff(RED);
+    }
+
+    if(u8BinaryCounter & 0x02)
+    {
+      LedOn(ORANGE);
+    }
+    else
+    {
+      LedOff(ORANGE);
+    }
+
+    if(u8BinaryCounter & 0x04)
+    {
+      LedOn(YELLOW);
+    }
+    else
+    {
+      LedOff(YELLOW);
+    }
+
+    if(u8BinaryCounter & 0x08)
+    {
+      LedOn(GREEN);
+    }
+    else
+    {
+      LedOff(GREEN);
+    }
+
+} /* end BinaryClock() */
+
 /*!--------------------------------------------------------------------------------------------------------------------
 @fn void UserApp1Initialize(void)
 
@@ -259,82 +352,7 @@ State Machine Function Definitions
 static void UserApp1SM_Idle(void)
 {
  
-  static u16 u16BlinkCount = 0;
-  static u8 u8BinaryCounter = 0;
-
-  u16BlinkCount++;
-
-/* All discrete LEDs to off 
-  LedOff(WHITE);
-  LedOff(PURPLE);
-  LedOff(BLUE);
-  LedOff(CYAN);
-  LedOff(GREEN);
-  LedOff(YELLOW);
-  LedOff(ORANGE);
-  LedOff(RED);
-  */
-  /* Backlight to white */  
-  LedOn(LCD_RED);
-  LedOn(LCD_GREEN);
-  LedOn(LCD_BLUE);
-
-
-  /* 500ms check and reset */
-  if(u16BlinkCount == 500)
-    {
-      u16BlinkCount = 0;
-      
-      /* Binary counter check and reset at 16 */
-      if ( ++u8BinaryCounter == 16)
-      {
-        
-        u8BinaryCounter = 0;
-      }
-      
-      //LedToggle(PURPLE);
-    }
-  
-     /* Parse the current count to set the LEDs.  
-      RED is bit 0, ORANGE is bit 1, 
-      YELLOW is bit 2, GREEN is bit 3. */
-    
-    if(u8BinaryCounter & 0x01)
-    {
-      LedOn(RED);
-    }
-    else
-    {
-      LedOff(RED);
-    }
-
-    if(u8BinaryCounter & 0x02)
-    {
-      LedOn(ORANGE);
-    }
-    else
-    {
-      LedOff(ORANGE);
-    }
-
-    if(u8BinaryCounter & 0x04)
-    {
-      LedOn(YELLOW);
-    }
-    else
-    {
-      LedOff(YELLOW);
-    }
-
-    if(u8BinaryCounter & 0x08)
-    {
-      LedOn(GREEN);
-    }
-    else
-    {
-      LedOff(GREEN);
-    }
-
+ 
 } /* end UserApp1SM_Idle() */
     
 

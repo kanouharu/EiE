@@ -40,6 +40,7 @@ void UserApp1RunActiveState(void);
 void TimerTest(void);
 void UserApp1TimerCallback(void);
 void ButtonTest(void);
+void BinaryClock(void);
 
 
 
