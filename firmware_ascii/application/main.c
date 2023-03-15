@@ -40,14 +40,15 @@ void main(void)
   WatchDogSetup(); 
   ClockSetup();
   GpioSetup();
+  PWMSetupAudio();
   InterruptSetup();
   SysTickSetup();
   
   /* Driver initialization */
   ButtonInitialize();
-  TimerInitialize();  
   LedInitialize();
-
+  TimerInitialize();
+  
   /* Application initialization */
   UserApp1Initialize();
   
@@ -60,7 +61,7 @@ void main(void)
     ButtonRunActiveState();
     LedRunActiveState();
     TimerRunActiveState(); 
-    
+
     /* Applications */
     UserApp1RunActiveState();
         

@@ -37,6 +37,11 @@ Function Declarations
 /*--------------------------------------------------------------------------------------------------------------------*/
 void UserApp1Initialize(void);
 void UserApp1RunActiveState(void);
+void TimerTest(void);
+void UserApp1TimerCallback(void);
+void ButtonTest(void);
+void BinaryClock(void);
+
 
 
 /*------------------------------------------------------------------------------------------------------------------*/
@@ -49,6 +54,7 @@ State Machine Declarations
 ***********************************************************************************************************************/
 static void UserApp1SM_Idle(void);    
 static void UserApp1SM_Error(void);         
+
 
 
 /**********************************************************************************************************************

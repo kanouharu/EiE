@@ -4,3 +4,15 @@ Debug/
 *.TMP
 *.wspos
 doxygen/html
+firmware_ascii/iar_8_10_1/eie_ascii-01.ewd
+firmware_ascii/iar_8_10_1/eie_ascii-01.ewp
+firmware_ascii/iar_8_10_1/eie_ascii-01.ewt
+firmware_ascii/iar_8_10_1/settings/eie_ascii-01.wsdt
+firmware_ascii/iar_8_10_1/settings/eie_ascii-01.Debug.general.xcl
+firmware_ascii/iar_8_10_1/settings/eie_ascii-01.Debug.driver.xcl
+firmware_ascii/iar_8_10_1/settings/eie_ascii-01.dnx
+firmware_ascii/iar_8_10_1/settings/eie_ascii-01.wsdt
+firmware_ascii/iar_8_10_1/eie_ascii-01.ewt
+firmware_ascii/iar_8_10_1/settings/eie_ascii-01.Debug.cspy.ps1
+firmware_ascii/iar_8_10_1/eie_ascii-01.ewp
+firmware_ascii/iar_8_10_1/eie_ascii-01.ewd
