@@ -56,10 +56,6 @@ static void TimerSM_Error(void);
 Constants / Definitions
 **********************************************************************************************************************/
 
-
-//This should be in eief1-pcb-01.h as it is board specific!
-
-
 /*! @cond DOXYGEN_EXCLUDE */
 /*----------------------------------------------------------------------------------------------------------------------
 Timer Setup
@@ -92,7 +88,6 @@ PB6 is an open pin available for TIOB1 I/O function if set for Peripheral A
     00 [0] CLKEN Clock not enabled 
 */
 
-/* Remeber this register configures both CAPTURE and WAVEFORM modes. Check User Guide */
 #define TC1_CMR_INIT (u32)0x000CC403
 /*
     31 [0] BSWTRG no software trigger effect on TIOB
@@ -116,7 +111,7 @@ PB6 is an open pin available for TIOB1 I/O function if set for Peripheral A
     16 [0] "
 
     15 [1] WAVE Waveform Mode is enabled
-    14 [1] WAVSEL/CPCTRG - Up to RC mode/ Trigger on RC compare
+    14 [1] WAVSEL Up to RC mode
     13 [0] "
     12 [0] ENETRG external event has no effect
 

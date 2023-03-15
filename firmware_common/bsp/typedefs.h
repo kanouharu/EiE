@@ -61,36 +61,29 @@ typedef void(*fnCode_type)(void);      /*!< @brief EiE standard variable type na
 typedef enum {FALSE = 0, TRUE = !FALSE} bool;  /*!< @brief EiE standard variable type name for boolean */
 #endif
 
-
-
-/*!
+/*! 
 @enum PortOffsetType
-@brief Port offset between identical registers in PIOA and PIOB
+@brief Processor-specific port address offsets.
 */
-typedef enum {PORTA = 0, PORTB = 0x80} PortOffsetType;
+typedef enum {PORTA = 0, PORTB = 0x80} PortOffsetType;               
 
-/*!
+/*! 
 @enum GpioActiveType
-@brief Active type of pin hardware.
+@brief Real names for active low vs. active high GPIO.
 */
-typedef enum {ACTIVE_LOW = 0, ACTIVE_HIGH = 1} GpioActiveType;
+typedef enum {ACTIVE_LOW = 0, ACTIVE_HIGH = 1} GpioActiveType;      
 
-/*!
-@enum PinConfigurationType
-@brief Struct to hold pin configuration
+/*! 
+@struct PinConfigurationType
+@brief Parameters necessary to fully describe a GPIO line.
 */
 typedef struct
 {
-  u32 u32BitPosition;       /*!> @breif Pin bit position within port */
-  PortOffsetType ePort;     /*!> @breif Pin port position */
-  GpioActiveType eActiveState;   /*!> @breif Pin hardware active type*/
+  u32 u32BitPosition;             /*!< @brief Pin bit position within port */
+  PortOffsetType ePort;           /*!< @brief Pin port */
+  GpioActiveType eActiveState;    /*!< @brief Pin hardware active type */
 }PinConfigurationType;
 
-
-/* Dummy type for manipulating interrupt system and compiler. Definition implied
-by reportedly working code */
-
-typedef ULONG u32Dummy; /*!< @brief Enigmatic variable type name to remove interrupt flags */
 
 #endif /* __TYPEDEFS_H */
 
