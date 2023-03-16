@@ -67,12 +67,211 @@ Function Definitions
 /*--------------------------------------------------------------------------------------------------------------------*/
 /*! @publicsection */                                                                                            
 /*--------------------------------------------------------------------------------------------------------------------*/
+/*!----------------------------------------------------------------------------------------------------------------------
+@fn void UserApp1TimerCallback(void)
+
+@brief Toggles LED at Timer1 interrupt.
+
+Requires:
+- Automatically called from Timer Interrupt
+
+Headcannon: 
+
+- CYAN is summoned to or from MIDICITY
+
+Promises:
+
+- CYAN LED is toggled.
+
+*/
+
+ void UserApp1TimerCallback(void)
+{
+  
+LedToggle(CYAN);
+
+} /* end UserApp1TimerCallback */
+
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 /*! @protectedsection */                                                                                            
 /*--------------------------------------------------------------------------------------------------------------------*/
+/*!----------------------------------------------------------------------------------------------------------------------
+@fn void ButtonTest(void)
+
+@brief Crude PIO Interrupt and Button API test
+
+Requires:
+- WHITE,PURPLE, and CYAN leds aren't being used elsewhere;
+ Interrupts are set up properly;
+ Button Driver properly initialized.
+
+Promises:
+- You can play with some buttons, demonstraiting press and hold detection
+
+*/
+void ButtonTest(void)
+{
+   /* Crude Button Driver Testing */
+  
+  if( IsButtonPressed(BUTTON0)){
+    
+      LedOn(WHITE);
+  }
+  else {
+    LedOff(WHITE);
+  }
+  
+  if(IsButtonHeld(BUTTON0, 10)){
+    LedOn(PURPLE);
+     }
+  if(IsButtonPressed(BUTTON3)){
+    LedOn(CYAN);
+    LedOff(PURPLE);
+      }
+   else{
+    LedOff(CYAN);
+      }
+} /* end ButtonTest */
+
+/*!----------------------------------------------------------------------------------------------------------------------
+@fn void TimerTest(void)
+
+@brief Code that seemed to cause hard-faults when added to UserApp1. Supposedly
+    demonstrates that TC1 (Channel 1 of the single TCB0 perf) and related interrupt
+    is configured and triggering the CYAN LED in sync with another LED blinking
+    in the main loop. Abstracting this code away so I can easily comment out.
+
+Requires:
+- PURPLE and CYAN leds aren't being used elsewhere;
+ Interrupts are set up properly;
+ Button Driver properly initialized.
+
+Promises:
+- Hardfaulting around return from TimerStart, Watchdogbone, somewhere in
+the ButtonDriver, and seemingly random other places (Due to TC-interrupt happening 
+reguardless of what the main loop is doing). Lots of frustration.
+
+Realization: Callback assignment never works as interrupt code isn't able to
+see the function pointer. No implementation of the working interrupt module code
+is avalible in any online respository, even the final project branches I've checked.
+ Better to just ignore the problem as a solution is not needed to understand the
+ fundamental ideas behind TCs and their uses. 
+*/
+void TimerTest(void)
+{
+   /*TC Driver Testing */
+  
+ /*Initalize LEDs and queue CYAN to blink */
+  
+  LedOff(CYAN);
+  LedOff(PURPLE);
+  LedBlink(PURPLE,LED_4HZ);
+  
+  /* Setup Timer1 to clock out 125ms periods. 125ms / 2,66666us = 46875 */
+  
+  
+  //TimerAssignCallback(TIMER0_CHANNEL1, UserApp1TimerCallback);
+ 
+  // TimerStop(TIMER0_CHANNEL1);
+  TimerSet(TIMER0_CHANNEL1, 46875);
+  TimerStart(TIMER0_CHANNEL1);
+  
+      
+} /* end TimerTest */
+
+/*!----------------------------------------------------------------------------------------------------------------------
+@fn void BinaryClock(void)
+
+@brief Abstraction of the Binary Clock project found in an archive of
+the online supplementary materials for the EIE program
+
+Requires:
+- WHITE,PURPLE, and CYAN leds aren't being used elsewhere;
+- GPIO configured
+
+*/
+void BinaryClock(void)
+{
 
 
+  static u16 u16BlinkCount = 0;
+  static u8 u8BinaryCounter = 0;
+
+  u16BlinkCount++;
+
+/* All discrete LEDs to off 
+  LedOff(WHITE);
+  LedOff(PURPLE);
+  LedOff(BLUE);
+  LedOff(CYAN);
+  LedOff(GREEN);
+  LedOff(YELLOW);
+  LedOff(ORANGE);
+  LedOff(RED);
+  */
+  /* Backlight to white */  
+  LedOn(LCD_RED);
+  LedOn(LCD_GREEN);
+  LedOn(LCD_BLUE);
+
+
+  /* 500ms check and reset */
+  if(u16BlinkCount == 500)
+    {
+      u16BlinkCount = 0;
+      
+      /* Binary counter check and reset at 16 */
+      if ( ++u8BinaryCounter == 16)
+      {
+        
+        u8BinaryCounter = 0;
+      }
+      
+      //LedToggle(PURPLE);
+    }
+  
+     /* Parse the current count to set the LEDs.  
+      RED is bit 0, ORANGE is bit 1, 
+      YELLOW is bit 2, GREEN is bit 3. */
+    
+    if(u8BinaryCounter & 0x01)
+    {
+      LedOn(RED);
+    }
+    else
+    {
+      LedOff(RED);
+    }
+
+    if(u8BinaryCounter & 0x02)
+    {
+      LedOn(ORANGE);
+    }
+    else
+    {
+      LedOff(ORANGE);
+    }
+
+    if(u8BinaryCounter & 0x04)
+    {
+      LedOn(YELLOW);
+    }
+    else
+    {
+      LedOff(YELLOW);
+    }
+
+    if(u8BinaryCounter & 0x08)
+    {
+      LedOn(GREEN);
+    }
+    else
+    {
+      LedOff(GREEN);
+    }
+
+} /* end BinaryClock */
 /*!--------------------------------------------------------------------------------------------------------------------
 @fn void UserApp1Initialize(void)
 
@@ -80,6 +279,10 @@ Function Definitions
 Initializes the State Machine and its variables.
 
 Should only be called once in main init section.
+ 
+Currently dumping ground for various crude tests of ever expanding functionality
+of the EiE system.
+
 
 Requires:
 - NONE
@@ -90,7 +293,11 @@ Promises:
 */
 void UserApp1Initialize(void)
 { 
+ // TimerTest();
+
   /* If good initialization, set state to Idle */
+  
+  PWMAudioSetFrequency(BUZZER1, 1000);
   if( 1 )
   {
     UserApp1_StateMachine = UserApp1SM_Idle;
@@ -142,6 +349,8 @@ State Machine Function Definitions
 */
 static void UserApp1SM_Idle(void)
 {
+  
+ BinaryClock(); 
  
 } /* end UserApp1SM_Idle() */
     

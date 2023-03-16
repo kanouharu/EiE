@@ -57,6 +57,17 @@ typedef enum {BUTTON0 = 0, BUTTON1, BUTTON2, BUTTON3, NOBUTTON} ButtonNameType;
 #define GPIOA_BUTTONS             (u32)( PA_17_BUTTON0 )
 #define GPIOB_BUTTONS             (u32)( PB_00_BUTTON1 | PB_01_BUTTON2 | PB_02_BUTTON3 )
 
+/*----------------------------------------------------------------------------------------------------------------------
+%BUZZER% Buzzer Configuration                                                                                                  
+----------------------------------------------------------------------------------------------------------------------*/
+/*! 
+@enum BuzzerChannelType
+@brief Logical names for buzzers in the system.
+
+These definitions correspond to the Channel ID in the PWM periph
+*/
+typedef enum {BUZZER1 = AT91C_PWMC_CHID0, BUZZER2 = AT91C_PWMC_CHID1, } BuzzerChannelType;
+
 
 /***********************************************************************************************************************
 * Constants
@@ -98,13 +109,16 @@ Should be 6000 for 48MHz CCLK. */
 /*------------------------------------------------------------------------------------------------------------------*/
 /*! @protectedsection */                                                                                            
 /*--------------------------------------------------------------------------------------------------------------------*/
+
 void WatchDogSetup(void);
 void ClockSetup(void);
 void GpioSetup(void);
 void SysTickSetup(void);
 void SystemSleep(void);
-
-
+void PWMSetupAudio(void);
+void PWMAudioSetFrequency(BuzzerChannelType eChannel_, u16 u16Frequency_);
+void PWMAudioOff(BuzzerChannelType eBuzzerChannel_);
+void PWMAudioOn(BuzzerChannelType eBuzzerChannel_);
 /***********************************************************************************************************************
 !!!!! GPIO pin names
 ***********************************************************************************************************************/
@@ -1527,7 +1541,7 @@ Tdiv_slclk = 2*(DIV+1)*Tslow_clock.
 */
 
 /* PIO Write Protect Mode Register PIO_WPMR
-Enables the Write Protect if WPKEY corresponds to 0x50494F (“PIO” in ASCII).
+Enables the Write Protect if WPKEY corresponds to 0x50494F (?PIO? in ASCII).
 Though this is defined in the user guide, there is no definition in the processor header file.
 We don't want to lock access to the GPIO registers anyway, so we won't use this for now.
 */
