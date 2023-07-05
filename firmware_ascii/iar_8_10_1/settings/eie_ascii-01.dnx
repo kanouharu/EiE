@@ -12,7 +12,7 @@
         <ByteLimit>50</ByteLimit>
     </Stack>
     <DebugChecksum>
-        <Checksum>66067594</Checksum>
+        <Checksum>2184752323</Checksum>
     </DebugChecksum>
     <CodeCoverage>
         <Enabled>_ 0</Enabled>
@@ -33,6 +33,9 @@
         <CStepIntDis>_ 0</CStepIntDis>
         <jlinkResetStyle>12</jlinkResetStyle>
         <jlinkResetStrategy>0</jlinkResetStrategy>
+        <TraceBufferSize>0x10000</TraceBufferSize>
+        <TraceStallIfFIFOFull>0x0</TraceStallIfFIFOFull>
+        <TracePortSize>0x0</TracePortSize>
     </JLinkDriver>
     <SfrWindow>
         <Show>1 1</Show>
@@ -68,6 +71,28 @@
         <FreqHi>0</FreqHi>
         <MultiCoreRunAll>1</MultiCoreRunAll>
     </Simulator>
+    <Trace1>
+        <Enabled>0</Enabled>
+        <ShowSource>1</ShowSource>
+    </Trace1>
+    <PlDriver>
+        <FirstRun>0</FirstRun>
+        <MemConfigValue>C:\Program Files\IAR Systems\Embedded Workbench 9.1\arm\CONFIG\debugger\Microchip\ATSAM3U2C.ddf</MemConfigValue>
+    </PlDriver>
+    <ArmDriver>
+        <EnforceMemoryConfiguration>1</EnforceMemoryConfiguration>
+        <EnableCache>0</EnableCache>
+    </ArmDriver>
+    <CallStackLog>
+        <Enabled>0</Enabled>
+    </CallStackLog>
+    <CallStackStripe>
+        <ShowTiming>1</ShowTiming>
+    </CallStackStripe>
+    <Registers>
+        <regBase0>R0 10</regBase0>
+        <regBase1>R11 10</regBase1>
+    </Registers>
     <struct_types>
         <Fmt0>ButtonStatusType-u32DebounceTimeStart	3	0</Fmt0>
     </struct_types>
@@ -80,57 +105,36 @@
         <Fmt5>{W}3:u32CurrentButtonLocation	4	0</Fmt5>
         <Fmt6>{W}3:u32GPIOInterruptSources	4	0</Fmt6>
     </watch_formats>
-    <Trace1>
-        <Enabled>0</Enabled>
-        <ShowSource>1</ShowSource>
-    </Trace1>
-    <PlDriver>
-        <FirstRun>0</FirstRun>
-        <MemConfigValue>G:\Eie\IAR\arm\CONFIG\debugger\Microchip\ATSAM3U2C.ddf</MemConfigValue>
-    </PlDriver>
-    <ArmDriver>
-        <EnableCache>0</EnableCache>
-        <EnforceMemoryConfiguration>1</EnforceMemoryConfiguration>
-    </ArmDriver>
-    <LogFile>
-        <LoggingEnabled>_ 0</LoggingEnabled>
-        <LogFile>_ ""</LogFile>
-        <Category2>_ 0</Category2>
-    </LogFile>
-    <Registers>
-        <regBase0>R0 10</regBase0>
-        <regBase1>R11 10</regBase1>
-    </Registers>
     <Trace2>
         <Enabled>0</Enabled>
         <ShowSource>0</ShowSource>
     </Trace2>
-    <DisassembleMode>
-        <mode>0</mode>
-    </DisassembleMode>
-    <Breakpoints2>
-        <Bp0>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\bsp\eief1-pcb-01.c}.147.3" 0 0 1 "" 0 "" 0</Bp0>
-        <Bp1>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\bsp\eief1-pcb-01.c}.133.3" 0 0 1 "" 0 "" 0</Bp1>
-        <Count>2</Count>
-    </Breakpoints2>
     <TermIOLog>
         <LoggingEnabled>_ 0</LoggingEnabled>
         <LogFile>_ ""</LogFile>
     </TermIOLog>
-    <Aliases>
-        <Count>0</Count>
-        <SuppressDialog>0</SuppressDialog>
-    </Aliases>
     <DriverProfiling>
         <Enabled>0</Enabled>
         <Mode>1</Mode>
         <Graph>0</Graph>
         <Symbiont>0</Symbiont>
     </DriverProfiling>
-    <CallStackLog>
-        <Enabled>0</Enabled>
-    </CallStackLog>
-    <CallStackStripe>
-        <ShowTiming>1</ShowTiming>
-    </CallStackStripe>
+    <LogFile>
+        <LoggingEnabled>_ 0</LoggingEnabled>
+        <LogFile>_ ""</LogFile>
+        <Category2>_ 0</Category2>
+    </LogFile>
+    <DisassembleMode>
+        <mode>0</mode>
+    </DisassembleMode>
+    <Breakpoints2>
+        <Bp0>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\bsp\eief1-pcb-01.c}.147.3" 0 0 1 "" 0 "" 0</Bp0>
+        <Bp1>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\bsp\eief1-pcb-01.c}.133.3" 0 0 1 "" 0 "" 0</Bp1>
+        <Bp2>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\firmware_common\drivers\buttons.c}.373.11" 0 0 1 "" 0 "" 0</Bp2>
+        <Count>3</Count>
+    </Breakpoints2>
+    <Aliases>
+        <Count>0</Count>
+        <SuppressDialog>0</SuppressDialog>
+    </Aliases>
 </settings>

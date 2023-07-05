@@ -11,7 +11,7 @@
             <name>General</name>
             <archiveVersion>3</archiveVersion>
             <data>
-                <version>35</version>
+                <version>34</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>1</debug>
                 <option>
@@ -70,7 +70,7 @@
                 </option>
                 <option>
                     <name>OGLastSavedByProductVersion</name>
-                    <state>9.32.2.57275</state>
+                    <state>9.20.2.43955</state>
                 </option>
                 <option>
                     <name>OGChipSelectEditMenu</name>
@@ -98,7 +98,7 @@
                 </option>
                 <option>
                     <name>GBECoreSlave</name>
-                    <version>32</version>
+                    <version>31</version>
                     <state>38</state>
                 </option>
                 <option>
@@ -115,7 +115,7 @@
                 </option>
                 <option>
                     <name>CoreVariant</name>
-                    <version>32</version>
+                    <version>31</version>
                     <state>38</state>
                 </option>
                 <option>
@@ -138,7 +138,7 @@
                 </option>
                 <option>
                     <name>GFPUCoreSlave2</name>
-                    <version>32</version>
+                    <version>31</version>
                     <state>38</state>
                 </option>
                 <option>
@@ -202,14 +202,6 @@
                 <option>
                     <name>BuildFilesPath</name>
                     <state>Debug</state>
-                </option>
-                <option>
-                    <name>PointerAuthentication</name>
-                    <state>0</state>
-                </option>
-                <option>
-                    <name>FPU64</name>
-                    <state>1</state>
                 </option>
             </data>
         </settings>
@@ -694,7 +686,7 @@
             <name>ILINK</name>
             <archiveVersion>0</archiveVersion>
             <data>
-                <version>27</version>
+                <version>26</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>1</debug>
                 <option>
@@ -1054,14 +1046,6 @@
                     <name>IlinkWrapperFile</name>
                     <state></state>
                 </option>
-                <option>
-                    <name>IlinkProcessor</name>
-                    <state>1</state>
-                </option>
-                <option>
-                    <name>IlinkFpuProcessor</name>
-                    <state>1</state>
-                </option>
             </data>
         </settings>
         <settings>
@@ -1096,7 +1080,7 @@
             <name>General</name>
             <archiveVersion>3</archiveVersion>
             <data>
-                <version>35</version>
+                <version>34</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>0</debug>
                 <option>
@@ -1183,7 +1167,7 @@
                 </option>
                 <option>
                     <name>GBECoreSlave</name>
-                    <version>32</version>
+                    <version>31</version>
                     <state>0</state>
                 </option>
                 <option>
@@ -1200,7 +1184,7 @@
                 </option>
                 <option>
                     <name>CoreVariant</name>
-                    <version>32</version>
+                    <version>31</version>
                     <state>0</state>
                 </option>
                 <option>
@@ -1223,7 +1207,7 @@
                 </option>
                 <option>
                     <name>GFPUCoreSlave2</name>
-                    <version>32</version>
+                    <version>31</version>
                     <state>0</state>
                 </option>
                 <option>
@@ -1287,14 +1271,6 @@
                 <option>
                     <name>BuildFilesPath</name>
                     <state>Release</state>
-                </option>
-                <option>
-                    <name>PointerAuthentication</name>
-                    <state>0</state>
-                </option>
-                <option>
-                    <name>FPU64</name>
-                    <state>1</state>
                 </option>
             </data>
         </settings>
@@ -1764,7 +1740,7 @@
             <name>ILINK</name>
             <archiveVersion>0</archiveVersion>
             <data>
-                <version>27</version>
+                <version>26</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>0</debug>
                 <option>
@@ -2123,14 +2099,6 @@
                 <option>
                     <name>IlinkWrapperFile</name>
                     <state></state>
-                </option>
-                <option>
-                    <name>IlinkProcessor</name>
-                    <state>1</state>
-                </option>
-                <option>
-                    <name>IlinkFpuProcessor</name>
-                    <state>1</state>
                 </option>
             </data>
         </settings>

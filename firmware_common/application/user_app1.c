@@ -298,6 +298,8 @@ void UserApp1Initialize(void)
   /* If good initialization, set state to Idle */
   
   PWMAudioSetFrequency(BUZZER1, 1000);
+  PWMAudioSetFrequency(BUZZER2, 200);
+
   if( 1 )
   {
     UserApp1_StateMachine = UserApp1SM_Idle;
@@ -351,7 +353,28 @@ static void UserApp1SM_Idle(void)
 {
   
  BinaryClock(); 
+
+ /* BUZZER1 is on if BUTTON1 was pressed */
+  if(WasButtonPressed(BUTTON1))
+  {
+    ButtonAcknowledge(BUTTON1);
+    PWMAudioOn(BUZZER1);
+  }
  
+  /* BUZZER2 is on if BUTTON2 was pressed */
+  if(WasButtonPressed(BUTTON2))
+  {
+    ButtonAcknowledge(BUTTON2);
+    PWMAudioOn(BUZZER2);
+  }
+  
+  /* Both buzzers off if BUTTON3 was pressed */
+  if(WasButtonPressed(BUTTON3))
+  {
+    ButtonAcknowledge(BUTTON3);
+    PWMAudioOff(BUZZER1);
+    PWMAudioOff(BUZZER2);
+  }
 } /* end UserApp1SM_Idle() */
     
 

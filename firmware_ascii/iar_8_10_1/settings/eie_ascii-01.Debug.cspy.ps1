@@ -23,9 +23,9 @@
 
 if ($debugfile -eq "")
 {
-& "G:\Eie\IAR\common\bin\cspybat" -f "G:\Eie\otherRepos\eiebook\firmware_ascii\iar_8_10_1\settings\eie_ascii-01.Debug.general.xcl" --backend -f "G:\Eie\otherRepos\eiebook\firmware_ascii\iar_8_10_1\settings\eie_ascii-01.Debug.driver.xcl" 
+& "C:\Program Files\IAR Systems\Embedded Workbench 9.1\common\bin\cspybat" -f "G:\Eie\otherRepos\eiebook\firmware_ascii\iar_8_10_1\settings\eie_ascii-01.Debug.general.xcl" --backend -f "G:\Eie\otherRepos\eiebook\firmware_ascii\iar_8_10_1\settings\eie_ascii-01.Debug.driver.xcl" 
 }
 else
 {
-& "G:\Eie\IAR\common\bin\cspybat" -f "G:\Eie\otherRepos\eiebook\firmware_ascii\iar_8_10_1\settings\eie_ascii-01.Debug.general.xcl" --debug_file=$debugfile --backend -f "G:\Eie\otherRepos\eiebook\firmware_ascii\iar_8_10_1\settings\eie_ascii-01.Debug.driver.xcl" 
+& "C:\Program Files\IAR Systems\Embedded Workbench 9.1\common\bin\cspybat" -f "G:\Eie\otherRepos\eiebook\firmware_ascii\iar_8_10_1\settings\eie_ascii-01.Debug.general.xcl" --debug_file=$debugfile --backend -f "G:\Eie\otherRepos\eiebook\firmware_ascii\iar_8_10_1\settings\eie_ascii-01.Debug.driver.xcl" 
 }

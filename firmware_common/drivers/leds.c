@@ -15,7 +15,7 @@ CONSTANTS
 - NONE
 
 TYPES
-- LedNameType 
+- LedNameType (devboard-specific)
 
  (from eief1-pcb-01):
  {WHITE, PURPLE, BLUE, CYAN, 
@@ -23,14 +23,19 @@ TYPES
   LCD_RED, LCD_GREEN, LCD_BLUE}
 
 - LedRateType:
-  {LED_0HZ = 0, LED_0_5HZ = 1000, LED_1HZ = 500, LED_2HZ = 250, 
-   LED_4HZ = 125, LED_8HZ = 63 } 
+  {LED_0HZ = 0, LED_0_5HZ = 1000, LED_1HZ = 500, LED_2HZ = 250, LED_4HZ = 125, LED_8HZ = 63,
+   LED_PWM_0 = 0,   LED_PWM_5 = 1,   LED_PWM_10 = 2,  LED_PWM_15 = 3,  LED_PWM_20 = 4, 
+   LED_PWM_25 = 5,  LED_PWM_30 = 6,  LED_PWM_35 = 7,  LED_PWM_40 = 8,  LED_PWM_45 = 9, 
+   LED_PWM_50 = 10, LED_PWM_55 = 11, LED_PWM_60 = 12, LED_PWM_65 = 13, LED_PWM_70 = 14, 
+   LED_PWM_75 = 15, LED_PWM_80 = 16, LED_PWM_85 = 17, LED_PWM_90 = 18, LED_PWM_95 = 19, 
+   LED_PWM_100 = 20} 
 
 PUBLIC FUNCTIONS
 - void LedOn(LedNameType eLED_)
 - void LedOff(LedNameType eLED_)
 - void LedToggle(LedNameType eLED_)
 - void LedBlink(LedNameType eLED_, LedRateType eBlinkRate_)
+- void LedPWM(LedNameType eLED_, LedRateType ePwmRate_)
 
 PROTECTED FUNCTIONS
 - void LedInitialize(void)
@@ -64,7 +69,7 @@ Global variable definitions with scope limited to this local application.
 Variable names shall start with "Led_<type>" and be declared as static.
 ***********************************************************************************************************************/
 static fnCode_type Led_StateMachine;                   /*!< @brief The state machine function pointer */
-//static u32 Led_u32Timeout;                           /*!< @brief Timeout counter used across states */
+//static u32 Led_u32Timeout;                             /*!< @brief Timeout counter used across states */
 
 static LedControlType Led_asControl[U8_TOTAL_LEDS];    /*!< @brief Holds individual control parameters for LEDs */
 
@@ -207,7 +212,7 @@ Promises:
 */
 void LedToggle(LedNameType eLED_)
 {
-  u32 *pu32Address = (u32*)(&(AT91C_BASE_PIOA->PIO_ODSR) + G_asBspLedConfigurations[eLED_].ePort);
+  u32* pu32Address = (u32*)(&(AT91C_BASE_PIOA->PIO_ODSR) + G_asBspLedConfigurations[eLED_].ePort);
 
   *pu32Address ^= G_asBspLedConfigurations[(u8)eLED_].u32BitPosition;
   
@@ -248,6 +253,42 @@ void LedBlink(LedNameType eLED_, LedRateType eBlinkRate_)
 } /* end LedBlink() */
 
 
+/*!----------------------------------------------------------------------------------------------------------------------
+@fn void LedPWM(LedNumberType eLED_, LedRateType ePwmRate_)
+
+@brief Sets an LED to PWM mode with the rate given.
+
+The PWM output is bit-bashed based on the 1ms system timing.  Therefore,
+PWM mode requires the main loop to be running properly. If the main 
+loop timing is longer than 1ms, noticeable glitches will be observed
+in the PWM signal to the LED.  Even if all applications are working properly,
+there still may be some jitter due to applications taking processor time.
+
+Use LedOff(eLED_) to stop PWM mode and return to NORMAL mode.
+
+Example to turn on the BLUE LED with 5% duty cycle:
+
+LedPWM(BLUE, LED_PWM_5);
+
+
+Requires:
+@param eLED_ is a valid LED index
+@param ePwmRate_ is an allowed duty cycle - use a PWM value from LedRateType
+
+Promises:
+- eLED_ is set to PWM mode at the duty cycle rate specified
+
+*/
+void LedPWM(LedNameType eLED_, LedRateType ePwmRate_)
+{
+  Led_asControl[(u8)eLED_].eMode = LED_PWM_MODE;
+  Led_asControl[(u8)eLED_].eRate = ePwmRate_;
+  Led_asControl[(u8)eLED_].u16Count = (u16)ePwmRate_;
+  Led_asControl[(u8)eLED_].eCurrentDuty = LED_PWM_DUTY_HIGH;
+
+} /* end LedPWM() */
+
+
 /*--------------------------------------------------------------------------------------------------------------------*/
 /*! @protectedsection */                                                                                            
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -267,33 +308,32 @@ Promises:
 */
 void LedInitialize(void)
 {
+
+  /* Initialize the LED control array */
+  for(u8 i = 0; i < U8_TOTAL_LEDS; i++)
+  {
+    LedPWM( (LedNameType)i, LED_PWM_100);
+  }
+ 
   /* Initialize the LED control array */
   for(u8 i = 0; i < U8_TOTAL_LEDS; i++)
   {
     Led_asControl[i].eMode = LED_NORMAL_MODE;
     Led_asControl[i].eRate = LED_0HZ;
     Led_asControl[i].u16Count = 0;
+    Led_asControl[i].eCurrentDuty = LED_PWM_DUTY_LOW;
   }
-  
-  /* Test and init sequence */
-  for(u8 i = 0; i < U8_TOTAL_LEDS; i++)
-  {
-    LedOn( (LedNameType)i );
-    for(u32 j = 0; j < 300000; j++);
-  }
-  
-  LedOff(WHITE);
-  LedOff(PURPLE);
-  LedOff(BLUE);
-  LedOff(CYAN);
-  LedToggle(GREEN);
-  LedToggle(YELLOW);
-  LedToggle(ORANGE);
-  LedToggle(RED);
+
+  /* Backlight on and white */
+  LedOn(LCD_RED);
+  LedOn(LCD_GREEN);
+  LedOn(LCD_BLUE);
 
   /* If good initialization, set state to Idle */
   if( 1 )
   {
+    /* Final setup and report that LED system is ready */
+
     Led_StateMachine = LedSM_Idle;
   }
   else
@@ -344,12 +384,12 @@ State Machine Declarations
 */
 static void LedSM_Idle(void)
 {
-  u32 *pu32Address;
+  u32* pu32Address;
   
 	/* Loop through each LED to check for blinkers */
   for(u8 i = 0; i < U8_TOTAL_LEDS; i++)
   {
-    /* Check if LED is in LED_BLINK_MODE mode */
+    /* Check if LED is in LED_BLINK_MODE */
     if(Led_asControl[(LedNameType)i].eMode == LED_BLINK_MODE)
     {
       /* Decrement counter and check for 0 */
@@ -360,7 +400,50 @@ static void LedSM_Idle(void)
         *pu32Address ^= G_asBspLedConfigurations[i].u32BitPosition;
         Led_asControl[(LedNameType)i].u16Count = Led_asControl[(LedNameType)i].eRate;
       }
-    }
+    } /* end LED_BLINK_MODE */
+    
+    /* Check if LED is in LED_PWM_MODE */
+    if(Led_asControl[(LedNameType)i].eMode == LED_PWM_MODE)
+    {
+      /* Handle special case of 0% duty cycle */
+      if( Led_asControl[i].eRate == LED_PWM_0 )
+      {
+        LedOff( (LedNameType)i );
+      }
+      
+      /* Handle special case of 100% duty cycle */
+      else if( Led_asControl[i].eRate == LED_PWM_100 )
+      {
+        LedOn( (LedNameType)i );
+      }
+  
+      /* Otherwise, regular PWM: decrement counter; toggle and reload if counter reaches 0 */
+      else
+      {
+        if(--Led_asControl[(LedNameType)i].u16Count == 0)
+        {
+          if(Led_asControl[(LedNameType)i].eCurrentDuty == LED_PWM_DUTY_HIGH)
+          {
+            /* Turn the LED off and update the counters for the next cycle */
+            LedOff( (LedNameType)i );
+            Led_asControl[(LedNameType)i].u16Count = LED_PWM_100 - Led_asControl[(LedNameType)i].eRate;
+            Led_asControl[(LedNameType)i].eCurrentDuty = LED_PWM_DUTY_LOW;
+          }
+          else
+          {
+            /* Turn the LED on and update the counters for the next cycle */
+            LedOn( (LedNameType)i );
+            Led_asControl[i].u16Count = Led_asControl[i].eRate;
+            Led_asControl[i].eCurrentDuty = LED_PWM_DUTY_HIGH;
+          }
+        }
+      }
+
+      /* Set the LED back to PWM mode since LedOff and LedOn set it to normal mode */
+     	Led_asControl[(LedNameType)i].eMode = LED_PWM_MODE;
+      
+    } /* end LED_PWM_MODE */
+    
   } /* end for(u8 i = 0; i < U8_TOTAL_LEDS; i++) */
    
 } /* end LedSM_Idle() */
@@ -375,6 +458,7 @@ static void LedSM_Error(void)
 {
   
 } /* end LedSM_Error() */
+
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* End of File */
