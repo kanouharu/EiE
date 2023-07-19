@@ -96,6 +96,49 @@ LedToggle(CYAN);
 /*--------------------------------------------------------------------------------------------------------------------*/
 /*! @protectedsection */                                                                                            
 /*--------------------------------------------------------------------------------------------------------------------*/
+ 
+
+/*!----------------------------------------------------------------------------------------------------------------------
+@fn PWM_Buttons(void)
+
+@brief Crude PWM API test
+
+Requires:
+- Same requirements as ButtonTest.
+- PWM driver properly initialized
+- No other tasks using BUTTON1, BUTTON2, BUTTON3, or any Buzzer
+
+Promises:
+- Clean PWM Buzzing
+
+*/
+
+void PWM_Buttons_Test(void){
+   
+ /* BUZZER1 is on if BUTTON1 was pressed */
+  if(WasButtonPressed(BUTTON1))
+  {
+    ButtonAcknowledge(BUTTON1);
+    PWMAudioOn(BUZZER1);
+  }
+ 
+  /* BUZZER2 is on if BUTTON2 was pressed */
+  if(WasButtonPressed(BUTTON2))
+  {
+    ButtonAcknowledge(BUTTON2);
+    PWMAudioOn(BUZZER2);
+  }
+  
+  /* Both buzzers off if BUTTON3 was pressed */
+  if(WasButtonPressed(BUTTON3))
+  {
+    ButtonAcknowledge(BUTTON3);
+    PWMAudioOff(BUZZER1);
+    PWMAudioOff(BUZZER2);
+  }
+ } /* end PWM_Buttons_Test */
+ 
+ 
 /*!----------------------------------------------------------------------------------------------------------------------
 @fn void ButtonTest(void)
 
@@ -210,11 +253,12 @@ void BinaryClock(void)
   LedOff(ORANGE);
   LedOff(RED);
   */
-  /* Backlight to white */  
+ 
+  /* Backlight to white
   LedOn(LCD_RED);
   LedOn(LCD_GREEN);
   LedOn(LCD_BLUE);
-
+*/
 
   /* 500ms check and reset */
   if(u16BlinkCount == 500)
@@ -297,9 +341,17 @@ void UserApp1Initialize(void)
 
   /* If good initialization, set state to Idle */
   
+  /*Set up for PWM_Buttons_Test */
   PWMAudioSetFrequency(BUZZER1, 1000);
   PWMAudioSetFrequency(BUZZER2, 200);
 
+  /*Bit-smashing, bashing, banging, hacking, spraying, etc initialization */
+  
+  LedOff(LCD_RED);
+  LedOff(LCD_GREEN);
+  LedOff(LCD_BLUE);
+  LedPWM(LCD_BLUE, LED_PWM_0);
+  
   if( 1 )
   {
     UserApp1_StateMachine = UserApp1SM_Idle;
@@ -351,30 +403,39 @@ State Machine Function Definitions
 */
 static void UserApp1SM_Idle(void)
 {
-  
+   static u16 u16LCDCycleCount = 0;
+   static u8 u8CurrentLCDRate = LED_PWM_0;
+   
+   
  BinaryClock(); 
 
- /* BUZZER1 is on if BUTTON1 was pressed */
-  if(WasButtonPressed(BUTTON1))
-  {
-    ButtonAcknowledge(BUTTON1);
-    PWMAudioOn(BUZZER1);
-  }
+ /* Blue LCD LED Backlight cycling logic */
  
-  /* BUZZER2 is on if BUTTON2 was pressed */
-  if(WasButtonPressed(BUTTON2))
-  {
-    ButtonAcknowledge(BUTTON2);
-    PWMAudioOn(BUZZER2);
-  }
+ 
+ u16LCDCycleCount++;
+ 
+/* Time delay here should always be a multiple of 20 or you'll suffer the most
+horrific, terrible, no go, very bad jitter. */
+ if(u16LCDCycleCount == (u16)40)
+ {
+   /* Handle Special Case of LED_PWM_100 (int value appears to be 20)*/
+   if(u8CurrentLCDRate == 20)
+   {
+     u8CurrentLCDRate = LED_PWM_0;
+   u16LCDCycleCount = 0;
+   }
+   
+   /* Otherwise, enum type abuse tolerable */
+   else{
+   LedPWM(LCD_BLUE, ++u8CurrentLCDRate);
+   u16LCDCycleCount = 0;
+   }
+   
+ }
   
-  /* Both buzzers off if BUTTON3 was pressed */
-  if(WasButtonPressed(BUTTON3))
-  {
-    ButtonAcknowledge(BUTTON3);
-    PWMAudioOff(BUZZER1);
-    PWMAudioOff(BUZZER2);
-  }
+
+ 
+ 
 } /* end UserApp1SM_Idle() */
     
 

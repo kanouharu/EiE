@@ -2171,6 +2171,9 @@
                 <name>$PROJ_DIR$\..\..\firmware_common\drivers\interrupts.h</name>
             </file>
             <file>
+                <name>$PROJ_DIR$\..\..\firmware_common\drivers\leds.h</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\..\..\firmware_common\drivers\timer.h</name>
             </file>
             <file>
@@ -2198,9 +2201,6 @@
                 <name>$PROJ_DIR$\..\..\firmware_common\drivers\utilities.c</name>
             </file>
         </group>
-        <file>
-            <name>$PROJ_DIR$\..\..\firmware_common\drivers\leds.h</name>
-        </file>
     </group>
     <group>
         <name>Application</name>

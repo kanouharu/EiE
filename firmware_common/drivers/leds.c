@@ -308,12 +308,6 @@ Promises:
 */
 void LedInitialize(void)
 {
-
-  /* Initialize the LED control array */
-  for(u8 i = 0; i < U8_TOTAL_LEDS; i++)
-  {
-    LedPWM( (LedNameType)i, LED_PWM_100);
-  }
  
   /* Initialize the LED control array */
   for(u8 i = 0; i < U8_TOTAL_LEDS; i++)
