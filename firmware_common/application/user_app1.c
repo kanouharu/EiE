@@ -97,7 +97,52 @@ LedToggle(CYAN);
 /*! @protectedsection */                                                                                            
 /*--------------------------------------------------------------------------------------------------------------------*/
  
+/*!----------------------------------------------------------------------------------------------------------------------
+@fn PWM_LCD_Test(void)
 
+@brief Bit-bang LCD fading test
+
+Requires:
+- PWM driver properly initialized
+- No other tasks using LCD
+
+Promises:
+- Clean PWM Buzzing
+
+*/
+
+void PWM_LCD_Test(void){
+   
+   static u16 u16LCDCycleCount = 0;
+   static u8 u8CurrentLCDRate = LED_PWM_0;
+   
+
+
+ /* Blue LCD LED Backlight cycling logic */
+ 
+ 
+ u16LCDCycleCount++;
+ 
+/* Time delay here should always be a multiple of 20 or you'll suffer the most
+horrific, terrible, no go, very bad jitter. */
+ if(u16LCDCycleCount == (u16)40)
+ {
+   /* Handle Special Case of LED_PWM_100 (int value appears to be 20)*/
+   if(u8CurrentLCDRate == 20)
+   {
+     u8CurrentLCDRate = LED_PWM_0;
+   u16LCDCycleCount = 0;
+   }
+   
+   /* Otherwise, enum type abuse tolerable */
+   else{
+   LedPWM(LCD_BLUE, ++u8CurrentLCDRate);
+   u16LCDCycleCount = 0;
+   }
+   
+ }
+
+ } /* end PWM_LCD_Test */
 /*!----------------------------------------------------------------------------------------------------------------------
 @fn PWM_Buttons(void)
 
@@ -403,36 +448,9 @@ State Machine Function Definitions
 */
 static void UserApp1SM_Idle(void)
 {
-   static u16 u16LCDCycleCount = 0;
-   static u8 u8CurrentLCDRate = LED_PWM_0;
-   
-   
- BinaryClock(); 
 
- /* Blue LCD LED Backlight cycling logic */
- 
- 
- u16LCDCycleCount++;
- 
-/* Time delay here should always be a multiple of 20 or you'll suffer the most
-horrific, terrible, no go, very bad jitter. */
- if(u16LCDCycleCount == (u16)40)
- {
-   /* Handle Special Case of LED_PWM_100 (int value appears to be 20)*/
-   if(u8CurrentLCDRate == 20)
-   {
-     u8CurrentLCDRate = LED_PWM_0;
-   u16LCDCycleCount = 0;
-   }
-   
-   /* Otherwise, enum type abuse tolerable */
-   else{
-   LedPWM(LCD_BLUE, ++u8CurrentLCDRate);
-   u16LCDCycleCount = 0;
-   }
-   
- }
-  
+  BinaryClock();
+  PWM_LCD_Test();
 
  
  

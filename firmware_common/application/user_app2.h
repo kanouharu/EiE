@@ -1,13 +1,13 @@
 /*!*********************************************************************************************************************
-@file user_app1.h                                                                
-@brief Header file for user_app1
+@file user_app2.h                                                                
+@brief Header file for user_app2
 
 ----------------------------------------------------------------------------------------------------------------------
-To start a new task using this user_app1 as a template:
-1. Follow the instructions at the top of user_app1.c
-2. Use ctrl-h to find and replace all instances of "user_app1" with "yournewtaskname"
-3. Use ctrl-h to find and replace all instances of "UserApp1" with "YourNewTaskName"
-4. Use ctrl-h to find and replace all instances of "USER_APP1" with "YOUR_NEW_TASK_NAME"
+To start a new task using this user_app2 as a template:
+1. Follow the instructions at the top of user_app2.c
+2. Use ctrl-h to find and replace all instances of "user_app2" with "yournewtaskname"
+3. Use ctrl-h to find and replace all instances of "UserApp2" with "YourNewTaskName"
+4. Use ctrl-h to find and replace all instances of "USER_APP2" with "YOUR_NEW_TASK_NAME"
 5. Add "#include yournewtaskname.h" to configuration.h
 6. Add/update any special configurations required in configuration.h (e.g. peripheral assignment and setup values)
 7. Delete this text (between the dashed lines)
@@ -15,8 +15,8 @@ To start a new task using this user_app1 as a template:
 
 **********************************************************************************************************************/
 
-#ifndef __USER_APP1_H
-#define __USER_APP1_H
+#ifndef __USER_APP2_H
+#define __USER_APP2_H
 
 /**********************************************************************************************************************
 Type Definitions
@@ -35,14 +35,10 @@ Function Declarations
 /*------------------------------------------------------------------------------------------------------------------*/
 /*! @protectedsection */                                                                                            
 /*--------------------------------------------------------------------------------------------------------------------*/
-void UserApp1Initialize(void);
-void UserApp1RunActiveState(void);
-void TimerTest(void);
-void UserApp1TimerCallback(void);
-void ButtonTest(void);
-void BinaryClock(void);
-void PWM_Buttons_Test(void);
-void PWM_LCD_Test(void);
+void UserApp2Initialize(void);
+
+
+void UserApp2RunActiveState(void);
 
 /*------------------------------------------------------------------------------------------------------------------*/
 /*! @privatesection */                                                                                            
@@ -52,8 +48,8 @@ void PWM_LCD_Test(void);
 /***********************************************************************************************************************
 State Machine Declarations
 ***********************************************************************************************************************/
-static void UserApp1SM_Idle(void);    
-static void UserApp1SM_Error(void);         
+static void UserApp2SM_Idle(void);    
+static void UserApp2SM_Error(void);         
 
 
 
@@ -64,7 +60,7 @@ Constants / Definitions
 
 
 
-#endif /* __USER_APP1_H */
+#endif /* __USER_APP2_H */
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* End of File                                                                                                        */
 /*--------------------------------------------------------------------------------------------------------------------*/
