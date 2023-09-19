@@ -25,6 +25,8 @@ PROTECTED FUNCTIONS
 
 #include "configuration.h"
 
+extern	void kill_x_cycles(u32);
+
 /***********************************************************************************************************************
 Global variable definitions with scope across entire project.
 All Global variable names shall start with "G_xxBsp"
@@ -212,18 +214,13 @@ void GpioSetup(void)
   
 } /* end GpioSetup() */
 
-
 /*!---------------------------------------------------------------------------------------------------------------------
 @fn  void SysTickSetup(void)
-
 @brief Initializes the 1ms and 1s System Ticks off the core timer.
-
 Requires:
 - NVIC is setup and SysTick handler is installed
-
 Promises:
 - Both global system timers are reset and the SysTick core timer is configured for 1ms intervals
-
 */
 void SysTickSetup(void)
 {
@@ -238,26 +235,22 @@ void SysTickSetup(void)
 } /* end SysTickSetup() */
 
 
+
+
 /*!---------------------------------------------------------------------------------------------------------------------
 @fn void SystemSleep(void)
-
 @brief Puts the system into sleep mode.  
-
 _SYSTEM_SLEEPING is set here so if the system wakes up because of a non-Systick
 interrupt, it can go back to sleep.
-
 Deep sleep mode is currently disabled, so maximum processor power savings are 
 not yet realized.  To enable deep sleep, there are certain considerations for 
 waking up that would need to be taken care of.
-
 Requires:
 - SysTick is running with interrupt enabled for wake from Sleep LPM
-
 Promises:
 - Configures processor for sleep while still allowing any required
   interrupt to wake it up.
 - G_u32SystemFlags _SYSTEM_SLEEPING is set
-
 */
 void SystemSleep(void)
 {    
@@ -274,120 +267,124 @@ void SystemSleep(void)
     __WFI();
   }
   
-} /* end SystemSleep(void) */
-
+} /* end SystemSleep() */
 
 /*!---------------------------------------------------------------------------------------------------------------------
-@fn void PWMSetupAudio(void)
+@fn void PWMSetupAudiop(void)
 
-@brief Configures the PWM peripheral for audio operation on H0 and H1 channels.
+@brief Configures the PWM peripheral for audio operation on the H0 and H1 Channels
+
 
 Requires:
-- Peripheral resources not used for any other function.
+- Peripheral resources not used for any other functions
 
 Promises:
 - PWM is configured for PWM mode and currently off.
 
 */
+
 void PWMSetupAudio(void)
 {
-  /* Set all intialization values */
-  AT91C_BASE_PWMC->PWMC_CLK = PWM_CLK_INIT;
+  /*Set all PWM initialization values */
+  AT91C_BASE_PWMC->PWMC_CLK = PWM_CMR0_INIT;
   
   AT91C_BASE_PWMC_CH0->PWMC_CMR = PWM_CMR0_INIT;
-  AT91C_BASE_PWMC_CH0->PWMC_CPRDR    = PWM_CPRD0_INIT; /* Set current frequency */
+  AT91C_BASE_PWMC_CH0->PWMC_CPRDR = PWM_CPRD0_INIT; /* Set current freqency */
   AT91C_BASE_PWMC_CH0->PWMC_CPRDUPDR = PWM_CPRD0_INIT; /* Latch CPRD values */
-  AT91C_BASE_PWMC_CH0->PWMC_CDTYR    = PWM_CDTY0_INIT; /* Set 50% duty */
+  AT91C_BASE_PWMC_CH0->PWMC_CDTYR = PWM_CDTY0_INIT; /* Set 50% duty */
   AT91C_BASE_PWMC_CH0->PWMC_CDTYUPDR = PWM_CDTY0_INIT; /* Latch CDTY values */
-
-  AT91C_BASE_PWMC_CH1->PWMC_CMR = PWM_CMR1_INIT;
-  AT91C_BASE_PWMC_CH1->PWMC_CPRDR    = PWM_CPRD1_INIT; /* Set current frequency  */
-  AT91C_BASE_PWMC_CH1->PWMC_CPRDUPDR = PWM_CPRD1_INIT; /* Latch CPRD values */
-  AT91C_BASE_PWMC_CH1->PWMC_CDTYR    = PWM_CDTY1_INIT; /* Set 50% duty */
+  
+  
+  
+  AT91C_BASE_PWMC_CH1->PWMC_CMR = PWM_CMR1_INIT;  
+  AT91C_BASE_PWMC_CH1->PWMC_CPRDR = PWM_CPRD1_INIT; /* Set current frequency */
+  AT91C_BASE_PWMC_CH1->PWMC_CPRDUPDR = PWM_CPRD1_INIT;  /* Latch CPRD values */
+  AT91C_BASE_PWMC_CH1->PWMC_CDTYR = PWM_CDTY1_INIT; /* Set 50% Duty */
   AT91C_BASE_PWMC_CH1->PWMC_CDTYUPDR = PWM_CDTY1_INIT; /* Latch CDTY values */
 
   
+  
 } /* end PWMSetupAudio() */
 
-
-/*--------------------------------------------------------------------------------------------------------------------*/
-/*! @publicsection */                                                                                            
-/*--------------------------------------------------------------------------------------------------------------------*/
-
 /*!---------------------------------------------------------------------------------------------------------------------
-@fn void PWMAudioSetFrequency(BuzzerChannelType eChannel_, u16 u16Frequency_)
+@fn void void PWMAudioSetFrequency(BuzzerChannelType eChannel_, u16 u16Frequency_)
 
-@brief Configures the PWM peripheral with the desired frequency on the specified channel.
+@brief Configures the PWM peripheral with the desired frequency on the specified
+channel.
 
-If the buzzer is already on, it will change frequency (essentially) immediately.  
+If the buzzer is already on, it will change freqnecy (essentially) immediately.
 If it is not on, the new frequency will be audible next time PWMAudioOn() is called.
 
 Example:
-
 PWMAudioSetFrequency(BUZZER1, 1000);
+(Period 1ms or 6000 ticks, duty @ 50% is 3000 ticks)
 
 Requires:
 - The PWM peripheral is correctly configured for the current processor clock speed.
 - CPRE_CLCK is the clock frequency for the PWM peripheral
 
-@param eChannel_ is the channel of interest and corresponds to the channel bit 
+@param eChannel_ is the channel of interest and corresponds to the channel bit
 position of the buzzer in the PWM peripheral
-@param u16Frequency_ is in Hertz and should be in the range 100 - 20,000 since
-       that is the audible range.  Higher and lower frequencies are allowed, though.
+@param u16Frequency_ is in Hertz and should be in the range 100-20000 since 
+that is the audible range. Higher and lower frequencies are allowed, though
 
 Promises:
 - The frequency and duty cycle values for the requested channel are calculated
-  and then latched to their respective update registers (CPRDUPDR, CDTYUPDR)
+and then latched to their respective update registers (CPRDUPDR. CDTYPDR)
 - If the channel is not valid, nothing happens
 
 */
+
 void PWMAudioSetFrequency(BuzzerChannelType eChannel_, u16 u16Frequency_)
 {
-  u32 u32ChannelPeriod;
   AT91PS_PWMC_CH psChannelAddress;
-  
+  u32 u32ChannelPeriod;
   /* Get the base address of the channel */
+  
   switch (eChannel_)
   {
-    case BUZZER1:
+  case BUZZER1:
     {
       psChannelAddress = AT91C_BASE_PWMC_CH0;
       break;
     }
-
-    case BUZZER2:
+      case BUZZER2:
     {
       psChannelAddress = AT91C_BASE_PWMC_CH1;
       break;
     }
-
-    default:
+    
+  default:
     {
-      /* Invalid channel */
+      /*Invalid channel */
       return;
     }
+    
   }
-
+  
   /* Calculate the period based on the requested frequency.
-  The duty cycle is this value divided by 2 (right shift 1) */
+    The duty cycle is this value divided by 2 (right shift 1) */
   u32ChannelPeriod = CPRE_CLCK / u16Frequency_;
   
-  /* Set different registers depending on if PWM is already running */
+  /* Set different regusters depending on if PWM is alreat running */
   if (AT91C_BASE_PWMC->PWMC_SR & eChannel_)
   {
-    /* Beeper is already running, so use update registers */
-    psChannelAddress->PWMC_CPRDUPDR = u32ChannelPeriod;   
-    psChannelAddress->PWMC_CDTYUPDR = u32ChannelPeriod >> 1; 
+    /* Buzzer is already running, so use update registers */
+    psChannelAddress->PWMC_CPRDUPDR = u32ChannelPeriod;
+    psChannelAddress->PWMC_CDTYUPDR = u32ChannelPeriod >> 1;
+
   }
   else
   {
-    /* Beeper is off, so use direct registers */
+    /* Buzzer is off, so use direct registers */
     psChannelAddress->PWMC_CPRDR = u32ChannelPeriod;
     psChannelAddress->PWMC_CDTYR = u32ChannelPeriod >> 1;
+
   }
   
+  
+  
 } /* end PWMAudioSetFrequency() */
-
 
 /*!---------------------------------------------------------------------------------------------------------------------
 @fn void PWMAudioOn(BuzzerChannelType eBuzzerChannel_)
@@ -439,13 +436,6 @@ void PWMAudioOff(BuzzerChannelType eBuzzerChannel_)
   AT91C_BASE_PWMC->PWMC_DIS = (u32)eBuzzerChannel_;  
 
 } /* end PWMAudioOff() */
-
-
-/*--------------------------------------------------------------------------------------------------------------------*/
-/*! @privatesection */                                                                                            
-/*--------------------------------------------------------------------------------------------------------------------*/
-
-
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* End of File */
 /*--------------------------------------------------------------------------------------------------------------------*/

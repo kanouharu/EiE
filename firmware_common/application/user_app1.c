@@ -70,11 +70,300 @@ Function Definitions
 /*--------------------------------------------------------------------------------------------------------------------*/
 /*! @publicsection */                                                                                            
 /*--------------------------------------------------------------------------------------------------------------------*/
+/*!----------------------------------------------------------------------------------------------------------------------
+@fn void UserApp1TimerCallback(void)
+
+@brief Toggles LED at Timer1 interrupt.
+
+Requires:
+- Automatically called from Timer Interrupt
+
+Headcannon: 
+
+- CYAN is summoned to or from MIDICITY
+
+Promises:
+
+- CYAN LED is toggled.
+
+*/
+
+ void UserApp1TimerCallback(void)
+{
+  
+LedToggle(CYAN);
+
+} /* end UserApp1TimerCallback */
+
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 /*! @protectedsection */                                                                                            
 /*--------------------------------------------------------------------------------------------------------------------*/
+ 
+/*!----------------------------------------------------------------------------------------------------------------------
+@fn PWM_LCD_Test(void)
 
+@brief Bit-bang LCD fading test
+
+Requires:
+- PWM driver properly initialized
+- No other tasks using LCD
+
+Promises:
+- Clean PWM Buzzing
+
+*/
+
+void PWM_LCD_Test(void){
+   
+   static u16 u16LCDCycleCount = 0;
+   static u8 u8CurrentLCDRate = LED_PWM_0;
+   
+
+
+ /* Blue LCD LED Backlight cycling logic */
+ 
+ 
+ u16LCDCycleCount++;
+ 
+/* Time delay here should always be a multiple of 20 or you'll suffer the most
+horrific, terrible, no go, very bad jitter. */
+ if(u16LCDCycleCount == (u16)40)
+ {
+   /* Handle Special Case of LED_PWM_100 (int value appears to be 20)*/
+   if(u8CurrentLCDRate == 20)
+   {
+     u8CurrentLCDRate = LED_PWM_0;
+   u16LCDCycleCount = 0;
+   }
+   
+   /* Otherwise, enum type abuse tolerable */
+   else{
+   LedPWM(LCD_BLUE, ++u8CurrentLCDRate);
+   u16LCDCycleCount = 0;
+   }
+   
+ }
+
+ } /* end PWM_LCD_Test */
+/*!----------------------------------------------------------------------------------------------------------------------
+@fn PWM_Buttons(void)
+
+@brief Crude PWM API test
+
+Requires:
+- Same requirements as ButtonTest.
+- PWM driver properly initialized
+- No other tasks using BUTTON1, BUTTON2, BUTTON3, or any Buzzer
+
+Promises:
+- Clean PWM Buzzing
+
+*/
+
+void PWM_Buttons_Test(void){
+   
+ /* BUZZER1 is on if BUTTON1 was pressed */
+  if(WasButtonPressed(BUTTON1))
+  {
+    ButtonAcknowledge(BUTTON1);
+    PWMAudioOn(BUZZER1);
+  }
+ 
+  /* BUZZER2 is on if BUTTON2 was pressed */
+  if(WasButtonPressed(BUTTON2))
+  {
+    ButtonAcknowledge(BUTTON2);
+    PWMAudioOn(BUZZER2);
+  }
+  
+  /* Both buzzers off if BUTTON3 was pressed */
+  if(WasButtonPressed(BUTTON3))
+  {
+    ButtonAcknowledge(BUTTON3);
+    PWMAudioOff(BUZZER1);
+    PWMAudioOff(BUZZER2);
+  }
+ } /* end PWM_Buttons_Test */
+ 
+ 
+/*!----------------------------------------------------------------------------------------------------------------------
+@fn void ButtonTest(void)
+
+@brief Crude PIO Interrupt and Button API test
+
+Requires:
+- WHITE,PURPLE, and CYAN leds aren't being used elsewhere;
+ Interrupts are set up properly;
+ Button Driver properly initialized.
+
+Promises:
+- You can play with some buttons, demonstraiting press and hold detection
+
+*/
+void ButtonTest(void)
+{
+   /* Crude Button Driver Testing */
+  
+  if( IsButtonPressed(BUTTON0)){
+    
+      LedOn(WHITE);
+  }
+  else {
+    LedOff(WHITE);
+  }
+  
+  if(IsButtonHeld(BUTTON0, 10)){
+    LedOn(PURPLE);
+     }
+  if(IsButtonPressed(BUTTON3)){
+    LedOn(CYAN);
+    LedOff(PURPLE);
+      }
+   else{
+    LedOff(CYAN);
+      }
+} /* end ButtonTest */
+
+/*!----------------------------------------------------------------------------------------------------------------------
+@fn void TimerTest(void)
+
+@brief Code that seemed to cause hard-faults when added to UserApp1. Supposedly
+    demonstrates that TC1 (Channel 1 of the single TCB0 perf) and related interrupt
+    is configured and triggering the CYAN LED in sync with another LED blinking
+    in the main loop. Abstracting this code away so I can easily comment out.
+
+Requires:
+- PURPLE and CYAN leds aren't being used elsewhere;
+ Interrupts are set up properly;
+ Button Driver properly initialized.
+
+Promises:
+- Hardfaulting around return from TimerStart, Watchdogbone, somewhere in
+the ButtonDriver, and seemingly random other places (Due to TC-interrupt happening 
+reguardless of what the main loop is doing). Lots of frustration.
+
+Realization: Callback assignment never works as interrupt code isn't able to
+see the function pointer. No implementation of the working interrupt module code
+is avalible in any online respository, even the final project branches I've checked.
+ Better to just ignore the problem as a solution is not needed to understand the
+ fundamental ideas behind TCs and their uses. 
+*/
+void TimerTest(void)
+{
+   /*TC Driver Testing */
+  
+ /*Initalize LEDs and queue CYAN to blink */
+  
+  LedOff(CYAN);
+  LedOff(PURPLE);
+  LedBlink(PURPLE,LED_4HZ);
+  
+  /* Setup Timer1 to clock out 125ms periods. 125ms / 2,66666us = 46875 */
+  
+  
+  //TimerAssignCallback(TIMER0_CHANNEL1, UserApp1TimerCallback);
+ 
+  // TimerStop(TIMER0_CHANNEL1);
+  TimerSet(TIMER0_CHANNEL1, 46875);
+  TimerStart(TIMER0_CHANNEL1);
+  
+      
+} /* end TimerTest */
+
+/*!----------------------------------------------------------------------------------------------------------------------
+@fn void BinaryClock(void)
+
+@brief Abstraction of the Binary Clock project found in an archive of
+the online supplementary materials for the EIE program
+
+Requires:
+- WHITE,PURPLE, and CYAN leds aren't being used elsewhere;
+- GPIO configured
+
+*/
+void BinaryClock(void)
+{
+
+
+  static u16 u16BlinkCount = 0;
+  static u8 u8BinaryCounter = 0;
+
+  u16BlinkCount++;
+
+/* All discrete LEDs to off 
+  LedOff(WHITE);
+  LedOff(PURPLE);
+  LedOff(BLUE);
+  LedOff(CYAN);
+  LedOff(GREEN);
+  LedOff(YELLOW);
+  LedOff(ORANGE);
+  LedOff(RED);
+  */
+ 
+  /* Backlight to white
+  LedOn(LCD_RED);
+  LedOn(LCD_GREEN);
+  LedOn(LCD_BLUE);
+*/
+
+  /* 500ms check and reset */
+  if(u16BlinkCount == 500)
+    {
+      u16BlinkCount = 0;
+      
+      /* Binary counter check and reset at 16 */
+      if ( ++u8BinaryCounter == 16)
+      {
+        
+        u8BinaryCounter = 0;
+      }
+      
+      //LedToggle(PURPLE);
+    }
+  
+     /* Parse the current count to set the LEDs.  
+      RED is bit 0, ORANGE is bit 1, 
+      YELLOW is bit 2, GREEN is bit 3. */
+    
+    if(u8BinaryCounter & 0x01)
+    {
+      LedOn(RED);
+    }
+    else
+    {
+      LedOff(RED);
+    }
+
+    if(u8BinaryCounter & 0x02)
+    {
+      LedOn(ORANGE);
+    }
+    else
+    {
+      LedOff(ORANGE);
+    }
+
+    if(u8BinaryCounter & 0x04)
+    {
+      LedOn(YELLOW);
+    }
+    else
+    {
+      LedOff(YELLOW);
+    }
+
+    if(u8BinaryCounter & 0x08)
+    {
+      LedOn(GREEN);
+    }
+    else
+    {
+      LedOff(GREEN);
+    }
+
+} /* end BinaryClock */
 /*!--------------------------------------------------------------------------------------------------------------------
 @fn void UserApp1Initialize(void)
 
@@ -82,6 +371,10 @@ Function Definitions
 Initializes the State Machine and its variables.
 
 Should only be called once in main init section.
+ 
+Currently dumping ground for various crude tests of ever expanding functionality
+of the EiE system.
+
 
 Requires:
 - NONE
@@ -91,8 +384,22 @@ Promises:
 
 */
 void UserApp1Initialize(void)
-{
+{ 
+ // TimerTest();
+
   /* If good initialization, set state to Idle */
+  
+  /*Set up for PWM_Buttons_Test */
+  PWMAudioSetFrequency(BUZZER1, 1000);
+  PWMAudioSetFrequency(BUZZER2, 200);
+
+  /*Bit-smashing, bashing, banging, hacking, spraying, etc initialization */
+  
+  LedOff(LCD_RED);
+  LedOff(LCD_GREEN);
+  LedOff(LCD_BLUE);
+  LedPWM(LCD_BLUE, LED_PWM_0);
+  
   if( 1 )
   {
     UserApp1_pfStateMachine = UserApp1SM_Idle;
@@ -140,9 +447,12 @@ State Machine Function Definitions
 /* What does this state do? */
 static void UserApp1SM_Idle(void)
 {
+  BinaryClock();
+  PWM_LCD_Test(); 
+} /* end UserApp1SM_Idle() */
     
 } /* end UserApp1SM_Idle() */
-     
+    
 
 /*-------------------------------------------------------------------------------------------------------------------*/
 /* Handle an error */

@@ -37,7 +37,12 @@ Function Declarations
 /*--------------------------------------------------------------------------------------------------------------------*/
 void UserApp1Initialize(void);
 void UserApp1RunActiveState(void);
-
+void TimerTest(void);
+void UserApp1TimerCallback(void);
+void ButtonTest(void);
+void BinaryClock(void);
+void PWM_Buttons_Test(void);
+void PWM_LCD_Test(void);
 
 /*------------------------------------------------------------------------------------------------------------------*/
 /*! @privatesection */                                                                                            
@@ -55,6 +60,8 @@ static void UserApp1SM_Error(void);
 /**********************************************************************************************************************
 Constants / Definitions
 **********************************************************************************************************************/
+
+
 
 
 #endif /* __USER_APP1_H */

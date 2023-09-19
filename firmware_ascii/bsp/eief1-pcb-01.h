@@ -58,7 +58,6 @@ typedef enum {BUTTON0 = 0, BUTTON1, BUTTON2, BUTTON3, NOBUTTON} ButtonNameType;
 #define GPIOA_BUTTONS             (u32)( PA_17_BUTTON0 )
 #define GPIOB_BUTTONS             (u32)( PB_00_BUTTON1 | PB_01_BUTTON2 | PB_02_BUTTON3 )
 
-
 /*----------------------------------------------------------------------------------------------------------------------
 %BUZZER% Buzzer Configuration                                                                                                  
 ----------------------------------------------------------------------------------------------------------------------*/
@@ -66,10 +65,9 @@ typedef enum {BUTTON0 = 0, BUTTON1, BUTTON2, BUTTON3, NOBUTTON} ButtonNameType;
 @enum BuzzerChannelType
 @brief Logical names for buzzers in the system.
 
-These definitions  correspond to the Channel ID in the PWM peripheral 
+These definitions correspond to the Channel ID in the PWM periph
 */
-typedef enum {BUZZER1 = AT91C_PWMC_CHID0, BUZZER2=AT91C_PWMC_CHID1} BuzzerChannelType;
-
+typedef enum {BUZZER1 = AT91C_PWMC_CHID0, BUZZER2 = AT91C_PWMC_CHID1, } BuzzerChannelType;
 
 
 /***********************************************************************************************************************
@@ -115,21 +113,17 @@ void PWMAudioOff(BuzzerChannelType eBuzzerChannel_);
 /*------------------------------------------------------------------------------------------------------------------*/
 /*! @protectedsection */                                                                                            
 /*--------------------------------------------------------------------------------------------------------------------*/
+
 void WatchDogSetup(void);
 void ClockSetup(void);
 void GpioSetup(void);
 
 void SysTickSetup(void);
 void SystemSleep(void);
-
 void PWMSetupAudio(void);
-
-
-/*--------------------------------------------------------------------------------------------------------------------*/
-/*! @privatesection */                                                                                            
-/*--------------------------------------------------------------------------------------------------------------------*/
-
-
+void PWMAudioSetFrequency(BuzzerChannelType eChannel_, u16 u16Frequency_);
+void PWMAudioOff(BuzzerChannelType eBuzzerChannel_);
+void PWMAudioOn(BuzzerChannelType eBuzzerChannel_);
 /***********************************************************************************************************************
 !!!!! GPIO pin names
 ***********************************************************************************************************************/
@@ -1552,7 +1546,7 @@ Tdiv_slclk = 2*(DIV+1)*Tslow_clock.
 */
 
 /* PIO Write Protect Mode Register PIO_WPMR
-Enables the Write Protect if WPKEY corresponds to 0x50494F (“PIO” in ASCII).
+Enables the Write Protect if WPKEY corresponds to 0x50494F (?PIO? in ASCII).
 Though this is defined in the user guide, there is no definition in the processor header file.
 We don't want to lock access to the GPIO registers anyway, so we won't use this for now.
 */
@@ -1710,7 +1704,7 @@ We don't want to lock access to the GPIO registers anyway, so we won't use this 
 /***********************************************************************************************************************
 $$$$$ PWM setup values
 ***********************************************************************************************************************/
-#define PWM_CLK_INIT (u32)0x00000000
+#define PWM_CLK_INIT (u32)0x00010001
 /*
     31 [0] Reserved
     30 [0] "
@@ -1722,7 +1716,7 @@ $$$$$ PWM setup values
     25 [0] "
     24 [0] "
 
-    23 [0] DIVB = 0 => CLKB is off
+    23 [0] DIVB = 1 => CLKB is on, no DIVB factor
     22 [0] "
     21 [0] "
     20 [0] "
@@ -1730,7 +1724,7 @@ $$$$$ PWM setup values
     19 [0] "
     18 [0] "
     17 [0] "
-    16 [0] "
+    16 [1] "
 
     15 [0] Reserved
     14 [0] "
@@ -1742,7 +1736,7 @@ $$$$$ PWM setup values
     09 [0] "
     08 [0] "
 
-    07 [0] DIVA = 0 => CLKB is off
+    07 [0] DIVA = 1 => CLKA is on, no DIVA factor
     06 [0] "
     05 [0] "
     04 [0] "
@@ -1750,7 +1744,18 @@ $$$$$ PWM setup values
     03 [0] "
     02 [0] "
     01 [0] "
-    00 [0] "
+    00 [1] "
+*/
+
+
+#define PWM_ENA_INIT (u32)0x00000003
+/*
+    31 - 4 [0] Reserved
+
+    03 [0] Channel 3 not enabled
+    02 [0] Channel 2 not enabled
+    01 [1] Channel 1 enabled
+    00 [1] Channel 0 enabled
 */
 
 #define PWM_SCM_INIT (u32)0x00000000
@@ -1844,11 +1849,11 @@ $$$$$ PWM setup values
 
 /* To achieve the full range of audio we want from 100Hz to 20kHz, we must be able to set periods
 of 10ms to 50us.
-- 10ms at 48MHz clock is 480,000 ticks
-- 50us at 48MHz clock is 2400 ticks
-- Only 16 bits are available to set the PWM period, so scale the clock by 8:
-- 10ms at 6MHz clock is 60,000 ticks
-- 50us at 6MHz clock is 300 ticks
+10ms at 48MHz clock is 480,000 ticks
+50us at 48MHz clock is 2400 ticks
+Only 16 bits are available to set the PWM period, so scale the clock by 8:
+10ms at 6MHz clock is 60,000 ticks
+50us at 6MHz clock is 300 ticks
 
 Set the default period for audio on channel 0 as 1/1kHz
 1ms at 6MHz = 6000 (duty = 3000)

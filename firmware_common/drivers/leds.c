@@ -212,7 +212,7 @@ Promises:
 */
 void LedToggle(LedNameType eLED_)
 {
-  u32 *pu32Address = (u32*)(&(AT91C_BASE_PIOA->PIO_ODSR) + G_asBspLedConfigurations[eLED_].ePort);
+  u32* pu32Address = (u32*)(&(AT91C_BASE_PIOA->PIO_ODSR) + G_asBspLedConfigurations[eLED_].ePort);
 
   *pu32Address ^= G_asBspLedConfigurations[(u8)eLED_].u32BitPosition;
   
@@ -308,65 +308,7 @@ Promises:
 */
 void LedInitialize(void)
 {
-  u32 u32Timer;
-  u8  u8Index;
-
-  u32 u32Buzzer1Frequency = 4000;
-  u32 u32Buzzer2Frequency = 500;
-  u32 u32StepSize = (u32Buzzer1Frequency - u32Buzzer2Frequency) / 20;
-
-  /* Initialize the LED control array */
-  for(u8 i = 0; i < U8_TOTAL_LEDS; i++)
-  {
-    LedPWM( (LedNameType)i, LED_PWM_100);
-  }
-  
-  /* Fade the LEDS out */
-  for(u8Index = 20; u8Index > 0; u8Index--)
-  {
-#ifdef STARTUP_SOUND
-    /* Configure Buzzers to provide some audio during start up */
-    PWMAudioSetFrequency(BUZZER1, u32Buzzer1Frequency);
-    PWMAudioOn(BUZZER1);
-    PWMAudioSetFrequency(BUZZER2, u32Buzzer2Frequency);
-    PWMAudioOn(BUZZER2);
-#endif /* STARTUP_SOUND */
-    
-    /* Spend a little bit of time in each level of intensity */
-    for(u16 j = 20; j > 0; j--)
-    {
-      u32Timer = G_u32SystemTime1ms;
-      while( !IsTimeUp(&u32Timer, 1) );
-      LedSM_Idle();
-    }
-    /* Pause for a bit on the first iteration to show the LEDs on for little while */
-    if(u8Index == 20)
-    {
-      while( !IsTimeUp(&u32Timer, 200) );
-    }
-    
-    /* Set the LED intensity for the next iteration */
-    for(u8 j = 0; j < U8_TOTAL_LEDS; j++)
-    {
-      Led_asControl[j].eRate = (LedRateType)(u8Index - 1);
-    }
-    
-    /* Set the buzzer frequency for the next iteration */
-    u32Buzzer1Frequency -= u32StepSize;
-    u32Buzzer2Frequency += u32StepSize;
-  }
-
-  /* Final update to set last state, hold for a short period */
-  LedSM_Idle();
-  while( !IsTimeUp(&u32Timer, 200) );
-  
-#ifdef STARTUP_SOUND
-  /* Turn off the buzzers */
-  PWMAudioOff(BUZZER1);
-  PWMAudioOff(BUZZER2);
-#endif /* STARTUP_SOUND */
  
-
   /* Initialize the LED control array */
   for(u8 i = 0; i < U8_TOTAL_LEDS; i++)
   {
@@ -384,6 +326,8 @@ void LedInitialize(void)
   /* If good initialization, set state to Idle */
   if( 1 )
   {
+    /* Final setup and report that LED system is ready */
+
     Led_StateMachine = LedSM_Idle;
   }
   else
@@ -434,7 +378,7 @@ State Machine Declarations
 */
 static void LedSM_Idle(void)
 {
-  u32 *pu32Address;
+  u32* pu32Address;
   
 	/* Loop through each LED to check for blinkers */
   for(u8 i = 0; i < U8_TOTAL_LEDS; i++)

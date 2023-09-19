@@ -59,7 +59,7 @@ extern volatile u32 G_u32ApplicationFlags;                /*!< @brief From main.
 Global variable definitions with scope limited to this local application.
 Variable names shall start with "UserApp3_<type>" and be declared as static.
 ***********************************************************************************************************************/
-static fnCode_type UserApp3_pfStateMachine;               /*!< @brief The state machine function pointer */
+static fnCode_type UserApp3_StateMachine;               /*!< @brief The state machine function pointer */
 //static u32 UserApp3_u32Timeout;                           /*!< @brief Timeout counter used across states */
 
 
@@ -95,12 +95,12 @@ void UserApp3Initialize(void)
   /* If good initialization, set state to Idle */
   if( 1 )
   {
-    UserApp3_pfStateMachine = UserApp3SM_Idle;
+    UserApp3_StateMachine = UserApp3SM_Idle;
   }
   else
   {
     /* The task isn't properly initialized, so shut it down and don't run */
-    UserApp3_pfStateMachine = UserApp3SM_Error;
+    UserApp3_StateMachine = UserApp3SM_Error;
   }
 
 } /* end UserApp3Initialize() */
@@ -123,7 +123,7 @@ Promises:
 */
 void UserApp3RunActiveState(void)
 {
-  UserApp3_pfStateMachine();
+  UserApp3_StateMachine();
 
 } /* end UserApp3RunActiveState */
 

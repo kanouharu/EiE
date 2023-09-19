@@ -8,7 +8,7 @@ To start a new task using this user_app2 as a template:
 2. Use ctrl-h to find and replace all instances of "user_app2" with "yournewtaskname"
 3. Use ctrl-h to find and replace all instances of "UserApp2" with "YourNewTaskName"
 4. Use ctrl-h to find and replace all instances of "USER_APP2" with "YOUR_NEW_TASK_NAME"
-5. Add #include yournewtaskname.h" to configuration.h
+5. Add "#include yournewtaskname.h" to configuration.h
 6. Add/update any special configurations required in configuration.h (e.g. peripheral assignment and setup values)
 7. Delete this text (between the dashed lines)
 ----------------------------------------------------------------------------------------------------------------------
@@ -36,8 +36,9 @@ Function Declarations
 /*! @protectedsection */                                                                                            
 /*--------------------------------------------------------------------------------------------------------------------*/
 void UserApp2Initialize(void);
-void UserApp2RunActiveState(void);
 
+
+void UserApp2RunActiveState(void);
 
 /*------------------------------------------------------------------------------------------------------------------*/
 /*! @privatesection */                                                                                            
@@ -55,6 +56,8 @@ static void UserApp2SM_Error(void);
 /**********************************************************************************************************************
 Constants / Definitions
 **********************************************************************************************************************/
+
+
 
 
 #endif /* __USER_APP2_H */
