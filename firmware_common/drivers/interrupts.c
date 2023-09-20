@@ -243,6 +243,34 @@ void SysTick_Handler(void)
   }
 } /* end SysTick_Handler()  */
 
+/*!-------------------------------------------------------------------------------------------------------------------
+@fn void Hardfault_Handler(void)
+
+@brief  Overrides weak default hardfault handler, turning off all LEDS save
+  LED_RED to indicate a hardfault state. 
+ 
+Requires:
+- 
+
+Promises:
+- 
+*/
+
+void Hardfault_Handler(void)
+{
+ 
+  LedOff(WHITE);
+  LedOff(CYAN);
+  LedOff(PURPLE);
+  LedOff(ORANGE);
+  LedOff(BLUE);
+  LedOff(GREEN);
+  LedOff(YELLOW);
+  LedOn(RED);
+
+  while(1); /* !!!!! ideally, update to log and/or report error and/or restart */
+  
+} /* end Hardfault_Handler()  */
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* End of File */

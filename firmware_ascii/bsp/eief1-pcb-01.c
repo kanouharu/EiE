@@ -286,7 +286,7 @@ Promises:
 void PWMSetupAudio(void)
 {
   /*Set all PWM initialization values */
-  AT91C_BASE_PWMC->PWMC_CLK = PWM_CMR0_INIT;
+  AT91C_BASE_PWMC->PWMC_CLK = PWM_CLK_INIT;
   
   AT91C_BASE_PWMC_CH0->PWMC_CMR = PWM_CMR0_INIT;
   AT91C_BASE_PWMC_CH0->PWMC_CPRDR = PWM_CPRD0_INIT; /* Set current freqency */

@@ -11,7 +11,6 @@
 Perihperal Setup Initializations
 
 Bookmarks:
-&&&&& Function Declarations
 !!!!! GPIO pin names
 @@@@@ Watchdog, Power Control, Clock, and Systick setup values
 ##### GPIO initial setup values
@@ -99,15 +98,12 @@ Should be 6000 for 48MHz CCLK. */
 
 
 /***********************************************************************************************************************
-&&&&& Function Declarations
+* Function Declarations
 ***********************************************************************************************************************/
 
 /*------------------------------------------------------------------------------------------------------------------*/
 /*! @publicsection */                                                                                            
 /*--------------------------------------------------------------------------------------------------------------------*/
-void PWMAudioSetFrequency(BuzzerChannelType eChannel_, u16 u16Frequency_);
-void PWMAudioOn(BuzzerChannelType eBuzzerChannel_);
-void PWMAudioOff(BuzzerChannelType eBuzzerChannel_);
 
 
 /*------------------------------------------------------------------------------------------------------------------*/
@@ -117,7 +113,6 @@ void PWMAudioOff(BuzzerChannelType eBuzzerChannel_);
 void WatchDogSetup(void);
 void ClockSetup(void);
 void GpioSetup(void);
-
 void SysTickSetup(void);
 void SystemSleep(void);
 void PWMSetupAudio(void);
