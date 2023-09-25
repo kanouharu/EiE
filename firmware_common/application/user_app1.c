@@ -402,7 +402,9 @@ void UserApp1Initialize(void)
   
   if( 1 )
   {
-    UserApp1_pfStateMachine = UserApp1SM_Idle;
+//    UserApp1_pfStateMachine = UserApp1SM_Idle;
+    UserApp1_pfStateMachine = 0; //I'm sorry little arm core. Please hard fault. 
+
   }
   else
   {

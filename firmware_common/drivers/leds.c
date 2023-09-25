@@ -254,7 +254,7 @@ void LedBlink(LedNameType eLED_, LedRateType eBlinkRate_)
 
 
 /*!----------------------------------------------------------------------------------------------------------------------
-@fn void LedPWM(LedNumberType eLED_, LedRateType ePwmRate_)
+@fn void LedPWM(LedNameType eLED_, LedRateType ePwmRate_)
 
 @brief Sets an LED to PWM mode with the rate given.
 

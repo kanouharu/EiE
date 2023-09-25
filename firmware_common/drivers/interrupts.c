@@ -256,7 +256,7 @@ Promises:
 - 
 */
 
-void Hardfault_Handler(void)
+void HardFault_Handler(void)
 {
  
   LedOff(WHITE);
@@ -268,7 +268,7 @@ void Hardfault_Handler(void)
   LedOff(YELLOW);
   LedOn(RED);
 
-  while(1); /* !!!!! ideally, update to log and/or report error and/or restart */
+    while(1); /* !!!!! ideally, update to log and/or report error and/or restart */
   
 } /* end Hardfault_Handler()  */
 

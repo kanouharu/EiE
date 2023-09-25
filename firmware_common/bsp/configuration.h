@@ -63,6 +63,7 @@ Includes
 #include "user_app1.h"
 #include "user_app2.h"
 #include "user_app3.h"
+#include "messaging.h"
 
 
 #endif /* __CONFIG_H */

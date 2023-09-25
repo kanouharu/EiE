@@ -12,7 +12,7 @@
         <ByteLimit>50</ByteLimit>
     </Stack>
     <DebugChecksum>
-        <Checksum>840941877</Checksum>
+        <Checksum>3737289898</Checksum>
     </DebugChecksum>
     <Exceptions>
         <StopOnUncaught>_ 0</StopOnUncaught>
@@ -80,13 +80,18 @@
         <MultiCoreRunAll>1</MultiCoreRunAll>
     </Simulator>
     <PlDriver>
-        <MemConfigValue>G:\Eie\IAR\arm\CONFIG\debugger\Microchip\ATSAM3U2C.ddf</MemConfigValue>
         <FirstRun>0</FirstRun>
+        <MemConfigValue>G:\Eie\IAR\arm\CONFIG\debugger\Microchip\ATSAM3U2C.ddf</MemConfigValue>
     </PlDriver>
     <ArmDriver>
         <EnableCache>0</EnableCache>
         <EnforceMemoryConfiguration>1</EnforceMemoryConfiguration>
     </ArmDriver>
+    <LogFile>
+        <LoggingEnabled>_ 0</LoggingEnabled>
+        <LogFile>_ "$PROJ_DIR$\LogFile1.log"</LogFile>
+        <Category2>_ 2</Category2>
+    </LogFile>
     <Trace2>
         <Enabled>0</Enabled>
         <ShowSource>0</ShowSource>
@@ -95,7 +100,9 @@
         <mode>0</mode>
     </DisassembleMode>
     <Breakpoints2>
-        <Count>0</Count>
+        <Bp0>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\firmware_common\drivers\interrupts.c}.271.5" 0 0 1 "" 0 "" 0</Bp0>
+        <Bp1>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\firmware_common\application\user_app1.c}.435.3" 0 0 1 "" 0 "" 0</Bp1>
+        <Count>2</Count>
     </Breakpoints2>
     <TermIOLog>
         <LoggingEnabled>_ 0</LoggingEnabled>
@@ -117,9 +124,4 @@
     <CallStackStripe>
         <ShowTiming>1</ShowTiming>
     </CallStackStripe>
-    <LogFile>
-        <LoggingEnabled>_ 0</LoggingEnabled>
-        <LogFile>_ "$PROJ_DIR$\LogFile1.log"</LogFile>
-        <Category2>_ 2</Category2>
-    </LogFile>
 </settings>
